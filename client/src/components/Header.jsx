@@ -9,7 +9,7 @@ import { BsCart4 } from "react-icons/bs";
 import { useSelector } from 'react-redux'
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import UserMenu from "./UserMenu.jsx"
-import { DisplayPriceInRupees } from '../utils/displayPriceInRupees.js'
+import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees.js'
 import { useGlobalContext } from '../provider/GlobalProvider.jsx';
 import DisplayCartItem from './DisplayCartItem.jsx'
 
