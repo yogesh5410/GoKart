@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux'
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import UserMenu from "./UserMenu.jsx"
 import { DisplayPriceInRupees } from '../utils/displayPriceInRupees.js'
-import { useGlobalContext } from '../provider/GlobalProvider';
+import { useGlobalContext } from '../provider/GlobalProvider.jsx';
 import DisplayCartItem from './DisplayCartItem.jsx'
 
 const Header = () => {

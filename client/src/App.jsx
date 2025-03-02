@@ -10,7 +10,7 @@ import fetchUserDetails from './utils/fetchUserDetails.js';
 import Axios from './utils/Axios.js';
 import SummaryApi from './common/SummaryApi.js';
 import { setAllCategory, setAllSubCategory, setLoadingCategory } from './store/productSlice.js';
-import GlobalProvider from './provider/GlobalProvider';
+import GlobalProvider from './provider/GlobalProvider.jsx';
 import CartMobileLink from './components/CartMobile.jsx'
 import { useLocation } from 'react-router-dom';
 
