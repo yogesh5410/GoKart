@@ -2,7 +2,7 @@ import React from 'react'
 import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
 import { Link } from 'react-router-dom'
 import { valideURLConvert } from '../utils/valideURLConvert'
-import { pricewithDiscount } from '../utils/pricewithDiscount'
+import { pricewithDiscount } from '../utils/PriceWithDiscount'
 import AddToCartButton from './AddToCartButton'
 
 const CardProduct = ({ data }) => {
