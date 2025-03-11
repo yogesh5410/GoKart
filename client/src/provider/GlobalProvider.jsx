@@ -133,11 +133,10 @@ const GlobalProvider = ({ children }) => {
 
     const token = localStorage.getItem("token")
     useEffect(() => {
-        if(token) {fetchCartItem()
+        fetchCartItem()
         handleLogoutOut()
         fetchAddress()
         fetchOrder()
-        }
     }, [user])
 
     return (
