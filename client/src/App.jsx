@@ -49,20 +49,20 @@ function App() {
   const fetchSubCategory = async () => {
     try {
 
-        const response = await Axios({
-            ...SummaryApi.getSubCategory
-        })
-        //console.log(response)
-        const { data: responseData } = response
+      const response = await Axios({
+        ...SummaryApi.getSubCategory
+      })
+      //console.log(response)
+      const { data: responseData } = response
 
-        if (responseData.success) {
-            dispatch(setAllSubCategory(responseData.data))
-        }
+      if (responseData.success) {
+        dispatch(setAllSubCategory(responseData.data))
+      }
 
-    } catch(error) {
-        toast.error(error)
+    } catch (error) {
+      toast.error(error)
     }
-}
+  }
 
 
 
@@ -74,17 +74,19 @@ function App() {
   }, [])
 
   return (
-    <GlobalProvider> 
-      <Header/>
-      <main className='min-h-[78vh]'>
-          <Outlet/>
-      </main>
-      <Footer/>
-      <Toaster/>
+    <GlobalProvider>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow">
+          <Outlet />
+        </main>
+        <Footer/>
+      </div>
+      <Toaster />
       {
-         location.pathname !== '/checkout' && 
+        location.pathname !== '/checkout' &&
         (
-          <CartMobileLink/>
+          <CartMobileLink />
         )
       }
     </GlobalProvider>

@@ -83,7 +83,7 @@ const CheckoutPage = () => {
     } 
   }
   return (
-    <section className='bg-blue-50'>
+    <section className='bg-blue-50 min-h-[80.8vh]'>
       <div className='container mx-auto p-4 flex flex-col lg:flex-row w-full gap-5 justify-between'>
         <div className='w-full'>
           {/***address***/}
@@ -141,7 +141,7 @@ const CheckoutPage = () => {
             </div>
           </div>
           <div className='w-full flex flex-col gap-4'>
-            <button className='py-2 px-4 bg-green-600 hover:bg-green-700 rounded text-white font-semibold' onClick={handleOnlinePayment}>Online Payment</button>
+            {/* <button className='py-2 px-4 bg-green-600 hover:bg-green-700 rounded text-white font-semibold' onClick={handleOnlinePayment}>Online Payment</button> */}
 
             <button className='py-2 px-4 border-2 border-green-600 font-semibold text-green-600 hover:bg-green-600 hover:text-white' onClick={handleCashOnDelivery}>Cash on Delivery</button>
           </div>

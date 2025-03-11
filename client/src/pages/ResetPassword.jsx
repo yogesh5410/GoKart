@@ -79,7 +79,7 @@ const ResetPassword = () => {
     }
 
     return (
-        <section className="w-full container mx-auto px-2">
+        <section className="w-full container mx-auto px-2 ">
             <div className="bg-white my-4 w-full max-w-lg mx-auto rounded p-4">
                 <p className="text-2xl font-semibold">Reset Your Password</p>
 

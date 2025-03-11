@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 const Dashboard = () => {
     const user = useSelector(state => state.user)
     return (
-        <section className="bg-white">
+        <section className="bg-white ">
             <div className="container mx-auto p-3 grid lg:grid-cols-[250px,1fr]">
                 {/* left for menu */}
                 {/* scroll only if content is more than screen height and hidden in mobile version*/}

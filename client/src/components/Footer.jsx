@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="border-t mt-auto bg-slate-700 text-white">
+    <footer className="border-t mt-auto bg-slate-700 h-[64px] text-white flex items-center">
       <div className="container mx-auto p-4 text-center flex flex-col lg:flex-row lg:justify-between gap-2">
         <p>© All Rights Reserved 2024.</p>
 
