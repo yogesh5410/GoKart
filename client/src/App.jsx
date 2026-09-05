@@ -12,6 +12,7 @@ import SummaryApi from './common/SummaryApi.js';
 import { setAllCategory, setAllSubCategory, setLoadingCategory } from './store/productSlice.js';
 import GlobalProvider from './provider/GlobalProvider.jsx';
 import CartMobileLink from './components/CartMobile.jsx'
+import ChatWidget from './components/ChatWidget.jsx'
 import { useLocation } from 'react-router-dom';
 
 
@@ -105,6 +106,8 @@ function App() {
           <CartMobileLink />
         )
       }
+
+      <ChatWidget />
     </GlobalProvider>
   )
 }

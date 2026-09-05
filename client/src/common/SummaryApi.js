@@ -148,6 +148,10 @@ const SummaryApi = {
     getOrderItems : {
         url : '/api/order/order-list',
         method : 'get'
+    },
+    chat : {
+        url : '/api/chat',
+        method : 'post'
     }
 }
 
