@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import AddAddress from '../components/AddAddress'
-import { MdDelete } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
+import { HiOutlineTrash, HiOutlinePencilSquare, HiPlus, HiOutlineMapPin } from "react-icons/hi2";
 import EditAddressDetails from '../components/EditAddressDetails';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
@@ -12,22 +11,22 @@ import { useGlobalContext } from '../provider/GlobalProvider';
 
 const Address = () => {
   const addressList = useSelector(state => state.addresses.addressList)
-  const [openAddress,setOpenAddress] = useState(false)
-  const [OpenEdit,setOpenEdit] = useState(false)
-  const [editData,setEditData] = useState({})
-  const { fetchAddress} = useGlobalContext()
+  const [openAddress, setOpenAddress] = useState(false)
+  const [OpenEdit, setOpenEdit] = useState(false)
+  const [editData, setEditData] = useState({})
+  const { fetchAddress } = useGlobalContext()
 
-  const handleDisableAddress = async(id)=>{
+  const handleDisableAddress = async (id) => {
     try {
       const response = await Axios({
         ...SummaryApi.disableAddress,
-        data : {
-          _id : id
+        data: {
+          _id: id
         }
       })
-      if(response.data.success){
+      if (response.data.success) {
         toast.success("Address Remove")
-        if(fetchAddress){
+        if (fetchAddress) {
           fetchAddress()
         }
       }
@@ -35,59 +34,83 @@ const Address = () => {
       AxiosToastError(error)
     }
   }
+
   return (
-    <div className=''>
-        <div className='bg-white shadow-lg px-2 py-2 flex justify-between gap-4 items-center '>
-            <h2 className='font-semibold text-ellipsis line-clamp-1'>Address</h2>
-            <button onClick={()=>setOpenAddress(true)} className='border border-primary-200 text-primary-200 px-3 hover:bg-primary-200 hover:text-black py-1 rounded-full'>
-                Add Address
-            </button>
+    <div className="grid gap-4">
+      <div className="panel-head rounded-card border border-line bg-surface">
+        <div>
+          <p className="eyebrow">Account</p>
+          <h1 className="mt-1 font-display text-lg font-semibold">Saved addresses</h1>
         </div>
-        <div className='bg-blue-50 p-2 grid gap-4'>
-              {
-                addressList.map((address,index)=>{
-                  return(
-                      <div className={`border rounded p-3 flex gap-3 bg-white ${!address.status && 'hidden'}`}>
-                          <div className='w-full'>
-                            <p>{address.address_line}</p>
-                            <p>{address.city}</p>
-                            <p>{address.state}</p>
-                            <p>{address.country} - {address.pincode}</p>
-                            <p>{address.mobile}</p>
-                          </div>
-                          <div className=' grid gap-10'>
-                            <button onClick={()=>{
-                              setOpenEdit(true)
-                              setEditData(address)
-                            }} className='bg-green-200 p-1 rounded  hover:text-white hover:bg-green-600'>
-                              <MdEdit/>
-                            </button>
-                            <button onClick={()=>
-                              handleDisableAddress(address._id)
-                            } className='bg-red-200 p-1 rounded hover:text-white hover:bg-red-600'>
-                              <MdDelete size={20}/>  
-                            </button>
-                          </div>
-                      </div>
-                  )
-                })
-              }
-              <div onClick={()=>setOpenAddress(true)} className='h-16 bg-blue-50 border-2 border-dashed flex justify-center items-center cursor-pointer'>
-                Add address
+        <button onClick={() => setOpenAddress(true)} className="btn-primary btn-sm">
+          <HiPlus size={15} />
+          Add address
+        </button>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {
+          addressList.map((address, index) => {
+            return (
+              <div
+                key={address._id + "addressCard"}
+                className={`card flex gap-3 p-4 ${!address.status && 'hidden'}`}
+              >
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
+                  <HiOutlineMapPin size={18} />
+                </span>
+
+                <div className="min-w-0 flex-1 text-sm">
+                  <p className="font-medium text-fg">{address.address_line}</p>
+                  <p className="mt-0.5 text-fg-muted">{address.city}, {address.state}</p>
+                  <p className="text-fg-muted">{address.country} — {address.pincode}</p>
+                  <p className="mt-1 text-xs text-fg-faint">Mobile: {address.mobile}</p>
+                </div>
+
+                <div className="flex shrink-0 flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      setOpenEdit(true)
+                      setEditData(address)
+                    }}
+                    aria-label="Edit address"
+                    className="grid h-8 w-8 place-items-center rounded-lg border border-line text-fg-muted transition-colors hover:border-brand hover:text-brand"
+                  >
+                    <HiOutlinePencilSquare size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDisableAddress(address._id)}
+                    aria-label="Remove address"
+                    className="grid h-8 w-8 place-items-center rounded-lg border border-line text-fg-muted transition-colors hover:border-critical hover:text-critical"
+                  >
+                    <HiOutlineTrash size={16} />
+                  </button>
+                </div>
               </div>
-        </div>
-
-        {
-          openAddress && (
-            <AddAddress close={()=>setOpenAddress(false)}/>
-          )
+            )
+          })
         }
 
-        {
-          OpenEdit && (
-            <EditAddressDetails data={editData} close={()=>setOpenEdit(false)}/>
-          )
-        }
+        <button
+          onClick={() => setOpenAddress(true)}
+          className="flex min-h-28 items-center justify-center gap-2 rounded-card border-2 border-dashed border-line-strong text-sm font-medium text-fg-muted transition-colors hover:border-brand hover:text-brand"
+        >
+          <HiPlus size={17} />
+          Add a new address
+        </button>
+      </div>
+
+      {
+        openAddress && (
+          <AddAddress close={() => setOpenAddress(false)} />
+        )
+      }
+
+      {
+        OpenEdit && (
+          <EditAddressDetails data={editData} close={() => setOpenEdit(false)} />
+        )
+      }
     </div>
   )
 }

@@ -1,15 +1,18 @@
 import React from 'react'
 import noDataImage from '../assets/noData.png'
 
-const NoData = () => {
+const NoData = ({ title = "Nothing here yet", message = "Once there's something to show, it'll appear here." }) => {
     return (
-        <div className='flex flex-col justify-center items-center p-8 gap-0'>
+        <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
             <img
                 src={noDataImage}
-                alt="NO DATA"
-                className='w-40 h-40'
+                alt=""
+                className="h-32 w-32 object-contain opacity-80"
             />
-            <p className="font-semi-bold text-2xl">No Data</p>
+            <div>
+                <p className="font-display text-lg font-semibold text-fg">{title}</p>
+                <p className="mt-1 max-w-xs text-sm text-fg-muted">{message}</p>
+            </div>
         </div>
     )
 }

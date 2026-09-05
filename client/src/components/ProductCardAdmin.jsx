@@ -1,85 +1,94 @@
 import React, { useState } from 'react'
 import EditProductAdmin from './EditProductAdmin'
-// import ConfirmBox from './ConfirmBox'
-import { IoClose } from 'react-icons/io5'
+import ConfirmBox from './ConfirmBox'
 import SummaryApi from '../common/SummaryApi'
 import Axios from '../utils/Axios'
 import AxiosToastError from '../utils/AxiosToastError'
 import toast from 'react-hot-toast'
+import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
+import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2'
 
 const ProductCardAdmin = ({ data, fetchProductData }) => {
-  const [editOpen,setEditOpen]= useState(false)
-  const [openDelete,setOpenDelete] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
 
-  const handleDeleteCancel  = ()=>{
-      setOpenDelete(false)
+  const handleDeleteCancel = () => {
+    setOpenDelete(false)
   }
 
-  const handleDelete = async()=>{
+  const handleDelete = async () => {
     try {
       const response = await Axios({
         ...SummaryApi.deleteProduct,
-        data : {
-          _id : data._id
+        data: {
+          _id: data._id
         }
       })
 
-      const { data : responseData } = response
+      const { data: responseData } = response
 
-      if(responseData.success){
-          toast.success(responseData.message)
-          if(fetchProductData){
-            fetchProductData()
-          }
-          setOpenDelete(false)
+      if (responseData.success) {
+        toast.success(responseData.message)
+        if (fetchProductData) {
+          fetchProductData()
+        }
+        setOpenDelete(false)
       }
     } catch (error) {
       AxiosToastError(error)
     }
   }
+
   return (
-    <div className='w-36 p-4 bg-white rounded'>
-        <div>
-            <img
-               src={data?.image[0]}  
-               alt={data?.name}
-               className='w-full h-full object-scale-down'
-            />
+    <div className="card overflow-hidden">
+      <div className="aspect-square w-full bg-sunken p-3">
+        <img
+          src={data?.image[0]}
+          alt={data?.name}
+          loading="lazy"
+          className="h-full w-full object-contain"
+        />
+      </div>
+
+      <div className="grid gap-2 p-3">
+        <p className="line-clamp-2 text-sm font-medium leading-snug text-fg">{data?.name}</p>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs text-fg-faint">{data?.unit}</span>
+          <span className="price text-sm">{DisplayPriceInRupees(data?.price)}</span>
         </div>
 
-        {/* text-ellipse => wrap text     line-clamp-2 => shows ... after 2 rows */}
-        <p className='text-ellipsis line-clamp-2 font-medium'>{data?.name}</p>
-        <p className='text-slate-400'>{data?.unit}</p>
-        <div className='grid grid-cols-2 gap-3 py-2'>
-          <button onClick={()=>setEditOpen(true)} className='border px-1 py-1 text-sm border-green-600 bg-green-100 text-green-800 hover:bg-green-200 rounded'>Edit</button>
-          <button onClick={()=>setOpenDelete(true)} className='border px-1 py-1 text-sm border-red-600 bg-red-100 text-red-600 hover:bg-red-200 rounded'>Delete</button>
+        <div className="mt-1 flex items-center gap-2">
+          <button onClick={() => setEditOpen(true)} className="btn-outline btn-sm flex-1">
+            <HiOutlinePencilSquare size={14} />
+            Edit
+          </button>
+          <button
+            onClick={() => setOpenDelete(true)}
+            aria-label={`Delete ${data?.name}`}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-fg-muted transition-colors hover:border-critical hover:bg-critical-soft hover:text-critical"
+          >
+            <HiOutlineTrash size={15} />
+          </button>
         </div>
+      </div>
 
-        {
-          editOpen && (
-            <EditProductAdmin fetchProductData={fetchProductData} data={data} close={()=>setEditOpen(false)}/>
-          )
-        }
+      {
+        editOpen && (
+          <EditProductAdmin fetchProductData={fetchProductData} data={data} close={() => setEditOpen(false)} />
+        )
+      }
 
-        {
-          openDelete && (
-            <section className='fixed top-0 left-0 right-0 bottom-0 bg-neutral-600 z-50 bg-opacity-70 p-4 flex justify-center items-center '>
-                <div className='bg-white p-4 w-full max-w-md rounded-md'>
-                    <div className='flex items-center justify-between gap-4'>
-                        <h3 className='font-semibold'>Permanent Delete</h3>
-                        <button onClick={()=>setOpenDelete(false)}>
-                          <IoClose size={25}/>
-                        </button>
-                    </div>
-                    <p className='my-2'>Are you sure want to delete permanent ?</p>
-                    <div className='flex justify-end gap-5 py-4'>
-                      <button onClick={handleDeleteCancel} className='border px-3 py-1 rounded bg-red-100 border-red-500 text-red-500 hover:bg-red-200'>Cancel</button>
-                      <button onClick={handleDelete} className='border px-3 py-1 rounded bg-green-100 border-green-500 text-green-500 hover:bg-green-200'>Delete</button>
-                    </div>
-                </div>
-            </section>
-          )
-        }
+      {
+        openDelete && (
+          <ConfirmBox
+            close={() => setOpenDelete(false)}
+            cancel={handleDeleteCancel}
+            confirm={handleDelete}
+            title="Delete product"
+            message={`"${data?.name}" will be removed from the store for good.`}
+          />
+        )
+      }
     </div>
   )
 }

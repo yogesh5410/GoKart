@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import logo from "../assets/logo.png"
+import React, { useState } from 'react'
 import Search from "./Search.jsx"
 import { Link } from 'react-router-dom'
-import { FaRegCircleUser } from "react-icons/fa6"
 import { useMobile } from "../hooks/useMobile.jsx"
 import { useLocation, useNavigate } from 'react-router-dom'
-import { BsCart4 } from "react-icons/bs";
 import { useSelector } from 'react-redux'
-import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
+import { HiOutlineShoppingBag, HiOutlineUser, HiChevronDown, HiChevronUp } from "react-icons/hi2"
 import UserMenu from "./UserMenu.jsx"
+import Logo from "./Logo.jsx"
+import ThemeToggle from "./ThemeToggle.jsx"
 import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees.js'
 import { useGlobalContext } from '../provider/GlobalProvider.jsx';
 import DisplayCartItem from './DisplayCartItem.jsx'
@@ -21,11 +20,8 @@ const Header = () => {
     const user = useSelector((state) => state?.user)
     const [openUserMenu, setOpenUserMenu] = useState(false)
     const cartItem = useSelector(state => state.cartItem.cart)
-    // const [totalPrice, setTotalPrice] = useState(0)
-    // const [totalQty, setTotalQty] = useState(0)
-    const { totalPrice, totalQty} = useGlobalContext()
-    const [openCartSection,setOpenCartSection] = useState(false)
-
+    const { totalPrice, totalQty } = useGlobalContext()
+    const [openCartSection, setOpenCartSection] = useState(false)
 
     const handleCloseUserMenu = () => {
         setOpenUserMenu(false)
@@ -40,67 +36,60 @@ const Header = () => {
         else navigate('/user')
     }
 
-    //total item and total price
-    // useEffect(() => {
-    //     const qty = cartItem.reduce((preve, curr) => {
-    //         return preve + curr.quantity
-    //     }, 0)           //0=initial value
-    //     setTotalQty(qty)
-
-    //     const tPrice = cartItem.reduce((preve, curr) => {
-    //         return preve + (curr.productId.price * curr.quantity)
-    //     }, 0)
-    //     setTotalPrice(tPrice)
-
-    // }, [cartItem])
-
-
     return (
-        <header className="h-28 lg:h-20 shadow-md bg- bg-green-500 sticky top-0 z-40 flex flex-col justify-center gap-1">
+        <header className="sticky top-0 z-40 flex h-28 flex-col justify-center gap-2 border-b border-white/5 bg-ink-grade shadow-lift lg:h-20">
 
             {
                 !(isSearchPage && isMobile) && (
-                    <div className="container mx-auto flex items-center px-2 justify-between">
-                        {/* Logo */}
-                        <div className="h-full">
-                            <Link to={"/"} className="h-full flex justify-center items-center">
-                                <img src={logo} width={170} height={60} alt='logo' className="hidden lg:block" />
-                                <img src={logo} width={120} height={60} alt='logo' className="lg:hidden" />
-                            </Link>
-                        </div>
+                    <div className="container mx-auto flex items-center justify-between gap-6">
 
-                        {/* Search */}
-                        <div className="hidden lg:block">
+                        {/* brand */}
+                        <Link to={"/"} className="shrink-0">
+                            <Logo tone="ink" compact={isMobile} />
+                        </Link>
+
+                        {/* search — desktop */}
+                        <div className="hidden max-w-xl flex-1 lg:block">
                             <Search />
                         </div>
 
+                        {/* actions */}
+                        <div className="flex items-center gap-2 lg:gap-3">
 
-                        {/**login and my cart */}
-                        <div>
-                            {/* mobile version */}
-                            <button onClick={handleMobileUser} className="text-balck lg:hidden">
-                                <FaRegCircleUser size={30} />
+                            <ThemeToggle tone="ink" />
+
+                            {/* mobile account */}
+                            <button
+                                onClick={handleMobileUser}
+                                aria-label="Account"
+                                className="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-ink-100 transition-colors hover:border-brand/60 hover:text-brand lg:hidden"
+                            >
+                                <HiOutlineUser size={20} />
                             </button>
-                            {/* desktop version */}
-                            <div className="hidden lg:flex items-center gap-10">
-                                {
 
+                            {/* desktop account */}
+                            <div className="hidden lg:block">
+                                {
                                     user?._id ? (
                                         <div className="relative">
-                                            <div onClick={() => setOpenUserMenu(!openUserMenu)} className="flex items-center gap-1 cursor-pointer select-none">
-                                                <p>Account</p>
-                                                {
-                                                    openUserMenu ? (
-                                                        <GoTriangleUp size={25} />
-                                                    ) : (
-                                                        <GoTriangleDown size={25} />
-                                                    )
-                                                }
-                                            </div>
+                                            <button
+                                                onClick={() => setOpenUserMenu(!openUserMenu)}
+                                                className="flex select-none items-center gap-2 rounded-pill border border-white/15 py-1.5 pl-1.5 pr-3 text-sm font-medium text-ink-50 transition-colors hover:border-brand/60"
+                                            >
+                                                <span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-white/10 text-ink-100">
+                                                    {
+                                                        user?.avatar
+                                                            ? <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+                                                            : <HiOutlineUser size={16} />
+                                                    }
+                                                </span>
+                                                <span className="max-w-24 truncate">{user?.name?.split(" ")[0] || "Account"}</span>
+                                                {openUserMenu ? <HiChevronUp size={16} /> : <HiChevronDown size={16} />}
+                                            </button>
                                             {
                                                 openUserMenu && (
-                                                    <div className="absolute right-0 top-12">
-                                                        <div className="bg-white rounded p-2 min-w-52 lg:shadow-lg">
+                                                    <div className="absolute right-0 top-12 w-60 animate-rise">
+                                                        <div className="card p-3 shadow-pop">
                                                             <UserMenu close={handleCloseUserMenu} />
                                                         </div>
                                                     </div>
@@ -108,42 +97,45 @@ const Header = () => {
                                             }
                                         </div>
                                     ) : (
-                                        <button onClick={redirectToLoginPage} className="text-lg px-2">Login</button>
+                                        <button onClick={redirectToLoginPage} className="btn-outline border-white/20 text-ink-50 hover:bg-white/10 hover:text-brand">
+                                            Log in
+                                        </button>
                                     )
-
                                 }
-
-                                <button onClick={()=>setOpenCartSection(true)} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-800 px-2 py-2 rounded text-white text-sm">
-                                    {/* add to cart button */}
-                                    <div className="animate-bounce">
-                                        <BsCart4 size={28} />
-                                    </div>
-                                    {
-                                        cartItem[0] ? (
-                                            <div>
-                                                <p>{totalQty} Items</p>
-                                                <p>{DisplayPriceInRupees(totalPrice)}</p>
-                                            </div>
-                                        ) : (
-                                            <p>My Cart</p>
-                                        )
-                                    }
-                                </button>
                             </div>
+
+                            {/* cart */}
+                            <button
+                                onClick={() => setOpenCartSection(true)}
+                                className="hidden items-center gap-3 rounded-pill bg-brand px-4 py-2 text-sm font-semibold text-brand-on shadow-card transition-all hover:bg-brand-strong hover:text-white active:scale-[0.98] lg:flex"
+                            >
+                                <HiOutlineShoppingBag size={20} />
+                                {
+                                    cartItem[0] ? (
+                                        <span className="flex flex-col items-start leading-tight">
+                                            <span className="text-[11px] font-medium opacity-80">{totalQty} items</span>
+                                            <span className="tabular-nums">{DisplayPriceInRupees(totalPrice)}</span>
+                                        </span>
+                                    ) : (
+                                        <span>Cart</span>
+                                    )
+                                }
+                            </button>
                         </div>
                     </div>
                 )
             }
 
-            <div className="container mx-auto px-2 lg:hidden">
+            {/* search — mobile */}
+            <div className="container mx-auto lg:hidden">
                 <Search />
             </div>
 
             {
-            openCartSection && (
-                <DisplayCartItem close={()=>setOpenCartSection(false)}/>
-            )
-        }
+                openCartSection && (
+                    <DisplayCartItem close={() => setOpenCartSection(false)} />
+                )
+            }
         </header>
     )
 }

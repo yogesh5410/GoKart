@@ -8,13 +8,13 @@ import EditCategory from '../components/EditCategory'
 import { toast } from 'react-hot-toast'
 import ConfirmBox from '../components/ConfirmBox'
 import AxiosToastError from '../utils/AxiosToastError'
-import { useSelector } from 'react-redux'
+import { HiPlus, HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2'
 
 const CategoryPage = () => {
     const [openUploadCategory, setOpenUploadCategory] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
-    const [loading,setLoading] = useState(false)
-    const [categoryData,setCategoryData] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [categoryData, setCategoryData] = useState([])
     const [editData, setEditData] = useState({
         name: "",
         image: ""
@@ -23,7 +23,7 @@ const CategoryPage = () => {
     const [deleteCategory, setDeleteCategory] = useState({
         _id: ""
     });
-    
+
     const handleDeleteCategory = async () => {
         try {
             const response = await Axios({
@@ -43,28 +43,19 @@ const CategoryPage = () => {
         }
     }
 
-    // const allCategory = useSelector(state => state.product.allCategory) 
-
-    // useEffect(() => {
-    //     setCategoryData(allCategory)
-    // }, [allCategory])
-
-
     const fetchCategory = async () => {
         try {
             setLoading(true)
-            //console.log("yogesh")
             const response = await Axios({
                 ...SummaryApi.getCategory
             })
-            //console.log(response)
             const { data: responseData } = response
 
             if (responseData.success) {
                 setCategoryData(responseData.data)
             }
 
-        } catch(error) {
+        } catch (error) {
             toast.error(error)
         } finally {
             setLoading(false)
@@ -73,46 +64,69 @@ const CategoryPage = () => {
 
     useEffect(() => {
         fetchCategory()
-    }, [])                   //single time rendered
-    
+    }, [])
+
     return (
-        <section>
-            <div className="p-2 bg-white shadow-md flex items-center justify-between sticky top-0">
-                <h2 className="font-semibold">Category</h2>
-                <button onClick={() => { setOpenUploadCategory(true) }} className="text-sm border border-primary-100 hover:bg-primary-100 py-1 px-2 rounded">Add Category</button>
+        <section className="grid gap-4">
+            <div className="panel-head rounded-card border border-line bg-surface">
+                <div>
+                    <p className="eyebrow">Store admin</p>
+                    <h1 className="mt-1 font-display text-lg font-semibold">Categories</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    {loading && <Loading className="text-brand" />}
+                    <button onClick={() => { setOpenUploadCategory(true) }} className="btn-primary btn-sm">
+                        <HiPlus size={15} />
+                        Add category
+                    </button>
+                </div>
             </div>
+
             {
                 !categoryData[0] && !loading && (
-                    <NoData />
+                    <div className="panel">
+                        <NoData title="No categories yet" message="Add your first category to start organising the store." />
+                    </div>
                 )
             }
 
-            {
-                loading && (<Loading />)
-            }
-
-            <div className="p-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {
-                    categoryData.map((category, index) => {
+                    categoryData.map((category) => {
                         return (
-                            <div className="w-32 h-56 group  rounded shadow-md" key={category._id}>
-                                <img
-                                    alt={category.name}
-                                    src={category.image}
-                                    className="w-full object-scale-down"
-                                />
-                                <div className="items-center h-9 flex gap-2">
-                                    <button onClick={() => {
-                                        setOpenEdit(true)
-                                        setEditData(category)
-                                    }}
-                                        className="flex-1 bg-green-100 text-green-600 font-medium py-1 rounded hover:bg-green-200">Edit</button>
-
-                                    <button onClick={() => {
-                                        setOpenConfirmBox(true)
-                                        setDeleteCategory(category)
-                                    }}
-                                        className="flex-1 bg-red-100 text-red-600 font-medium py-1 rounded hover:bg-red-200">Delete</button>
+                            <div className="card overflow-hidden" key={category._id}>
+                                <div className="aspect-square w-full bg-sunken p-3">
+                                    <img
+                                        alt={category.name}
+                                        src={category.image}
+                                        loading="lazy"
+                                        className="h-full w-full object-contain"
+                                    />
+                                </div>
+                                <div className="grid gap-3 p-3">
+                                    <p className="line-clamp-1 text-sm font-medium text-fg">{category.name}</p>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setOpenEdit(true)
+                                                setEditData(category)
+                                            }}
+                                            className="btn-outline btn-sm flex-1"
+                                        >
+                                            <HiOutlinePencilSquare size={14} />
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setOpenConfirmBox(true)
+                                                setDeleteCategory(category)
+                                            }}
+                                            aria-label={`Delete ${category.name}`}
+                                            className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-fg-muted transition-colors hover:border-critical hover:bg-critical-soft hover:text-critical"
+                                        >
+                                            <HiOutlineTrash size={15} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )
@@ -134,10 +148,15 @@ const CategoryPage = () => {
 
             {
                 openConfirmBox && (
-                    <ConfirmBox close={() => setOpenConfirmBox(false)} cancel={() => setOpenConfirmBox(false)} confirm={handleDeleteCategory} />
+                    <ConfirmBox
+                        close={() => setOpenConfirmBox(false)}
+                        cancel={() => setOpenConfirmBox(false)}
+                        confirm={handleDeleteCategory}
+                        title="Delete category"
+                        message="Products and sub categories using this category will block the delete."
+                    />
                 )
             }
-
         </section>
     )
 }

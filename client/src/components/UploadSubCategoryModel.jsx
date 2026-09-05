@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { IoClose } from 'react-icons/io5'
+import { HiXMark, HiOutlinePhoto } from 'react-icons/hi2'
 import uploadImage from '../utils/UploadImage'
 import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
@@ -35,8 +35,7 @@ const UploadSubCategoryModel = ({ close, fetchData }) => {
 
     setLoading(true)
     const response = await uploadImage(file)
-    console.log(response)
-    const { data : ImageResponse } = response
+    const { data: ImageResponse } = response
 
     setSubCategoryData((preve) => {
       return {
@@ -50,15 +49,13 @@ const UploadSubCategoryModel = ({ close, fetchData }) => {
 
   const handleRemoveCategorySelected = (categoryId) => {
     const index = subCategoryData.category.findIndex(el => el._id === categoryId)
-    subCategoryData.category.splice(index, 1)       //changes the variable subCategoryData directly
-
-    // setSubcategoryData(subcategoryData)        Does not trigger a re-render because React compares the new state (subcategoryData) with the current state. If they are the same reference, React does not update the component.
+    subCategoryData.category.splice(index, 1)
 
     setSubCategoryData((prev) => {
       return {
         ...prev
       }
-    })   // Works because it creates a new object reference. Even though the contents remain the same, React sees it as a state change and triggers a re-render.
+    })
   }
 
 
@@ -71,139 +68,138 @@ const UploadSubCategoryModel = ({ close, fetchData }) => {
         ...SummaryApi.createSubCategory,
         data: subCategoryData
       })
-  
-      const { data : responseData } = response
-  
-      if(responseData.success) {
+
+      const { data: responseData } = response
+
+      if (responseData.success) {
         toast.success(responseData.message)
-        if(close) close()
-          if(fetchData){
-            fetchData()
+        if (close) close()
+        if (fetchData) {
+          fetchData()
         }
       }
 
-    } catch(error) {
+    } catch (error) {
       AxiosToastError(error)
     }
   }
 
   return (
-    <section className="fixed top-0 right-0 left-0 bottom-0 bg-neutral-800 bg-opacity-70 flex justify-center items-center p-4">
-      <div className="w-full max-w-5xl bg-white p-4 rounded">
-        <div className="flex justify-between items-center gap-3">
-          <h1 className="font-semibold">Add Sub Category</h1>
-          <button onClick={close}>
-            <IoClose size={25} />
+    <section className="overlay flex items-center justify-center overflow-y-auto p-4">
+      <div className="modal my-8 max-w-3xl">
+        <div className="modal-head">
+          <div>
+            <p className="eyebrow">Store admin</p>
+            <h2 className="mt-1 font-display text-base font-semibold">New sub category</h2>
+          </div>
+          <button onClick={close} aria-label="Close" className="icon-btn">
+            <HiXMark size={22} />
           </button>
         </div>
 
-        <div>
-          <form className="my-3 grid gap-3" onSubmit={handleSubmitSubCategory}>
+        <form className="grid gap-4 p-5" onSubmit={handleSubmitSubCategory}>
 
-            <div className="grid gap-1">
-              <label htmlFor="name">Sub Category Name</label>
-              <input
-                id="name"
-                name="name"
-                value={subCategoryData.name}
-                type="text"
-                onChange={handleChange}
-                className="p-3 border outline-none focus-within:border-primary-100 rounded"
-              />
+          <div className="grid gap-1.5">
+            <label htmlFor="name" className="label">Sub category name</label>
+            <input
+              id="name"
+              name="name"
+              value={subCategoryData.name}
+              type="text"
+              onChange={handleChange}
+              placeholder="e.g. Fresh milk"
+              className="input"
+            />
+          </div>
+
+          <div className="grid gap-1.5">
+            <p className="label">Image</p>
+            <div className="flex flex-col items-center gap-4 lg:flex-row">
+              <div className="grid h-36 w-full place-items-center overflow-hidden rounded-xl border border-line bg-sunken p-2 lg:w-36">
+                {
+                  subCategoryData.image ? (
+                    <img
+                      alt='subCategory'
+                      src={subCategoryData.image}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <span className="flex flex-col items-center gap-1 text-fg-faint">
+                      <HiOutlinePhoto size={26} />
+                      <span className="text-xs">No image</span>
+                    </span>
+                  )
+                }
+              </div>
+              <label htmlFor='uploadSubCategoryImage' className="btn-outline cursor-pointer">
+                {loading ? "Uploading..." : "Upload image"}
+                <input
+                  type="file"
+                  id="uploadSubCategoryImage"
+                  className="hidden"
+                  onChange={handleUploadSubCategoryImage}
+                />
+              </label>
             </div>
+          </div>
 
-            <div className="grid gap-1">
-              <p>Image</p>
-              <div className="flex flex-col lg:flex-row items-center gap-3">
-                <div className="border h-36 w-full lg:w-36 bg-blue-50 flex items-center justify-center">
+          <div className="grid gap-1.5">
+            <label className="label">Categories</label>
+
+            {
+              subCategoryData.category[0] && (
+                <div className="flex flex-wrap gap-2">
                   {
-                    subCategoryData.image ? (
-                      <img
-                        alt='subCategory'
-                        src={subCategoryData.image}
-                        className='w-full h-full object-scale-down'
-                      />
-                    ) : (
-                      <p className="text-sm text-neutral-500 ">No Image</p>
-                    )
+                    subCategoryData.category.map((cat) => (
+                      <span key={cat._id + "selectedValue"} className="chip-brand pr-1">
+                        {cat.name}
+                        <button
+                          type="button"
+                          aria-label={`Remove ${cat.name}`}
+                          className="grid h-5 w-5 place-items-center rounded-full transition-colors hover:bg-brand hover:text-brand-on"
+                          onClick={() => handleRemoveCategorySelected(cat._id)}
+                        >
+                          <HiXMark size={13} />
+                        </button>
+                      </span>
+                    ))
                   }
                 </div>
-                <label htmlFor='uploadSubCategoryImage'>
-                  <div className="px-4 py-1 border border-primary-100 text-primary-100 rounded hover:bg-primary-100 hover:text-neutral-800 cursor-pointer">
-                    {
-                      loading ? "Uploading..." : "Upload Image"
-                    }
-                  </div>
-                  <input
-                    type="file"
-                    id="uploadSubCategoryImage"
-                    className='hidden'
-                    onChange={handleUploadSubCategoryImage}
-                  />
-                </label>
-              </div>
-            </div>
+              )
+            }
 
-            <div className="grid gap-1">
-              <label>Select Category</label>
-              <div className="border outline-none focus-within:border-primary-100 rounded">
-                {/*display value*/}
-                <div className='flex flex-wrap gap-2'>
-                  {
-                    subCategoryData.category.map((cat, index) => {
-                      return (
-                        <p key={cat._id + "selectedValue"} className='bg-white shadow-md px-1 m-1 flex items-center gap-2'>
-                          {cat.name}
-                          <div className='cursor-pointer hover:text-red-600' onClick={() => handleRemoveCategorySelected(cat._id)}>
-                            <IoClose size={20} />
-                          </div>
-                        </p>
-                      )
-                    })
+            <select
+              className="select"
+              value=""
+              onChange={(e) => {
+                const value = e.target.value
+                const categoryDetails = allCategory.find(el => el._id == value)
+
+                setSubCategoryData((preve) => {
+                  return {
+                    ...preve,
+                    category: [...preve.category, categoryDetails]
                   }
-                </div>
-
-
-                {/*Select category*/}
-                <select
-                  className='w-full p-2 bg-transparent outline-none border'
-                  onChange={(e) => {
-                    const value = e.target.value
-                    const categoryDetails = allCategory.find(el => el._id == value)
-
-                    setSubCategoryData((preve) => {
-                      return {
-                        ...preve,
-                        category: [...preve.category, categoryDetails]
-                      }
-                    })
-                  }}
-                >
-                  <option value={""}>Select Category</option>
-                  {
-                    allCategory.map((category, index) => {
-                      return (
-                        <option value={category?._id} key={category._id + "subcategory"}>{category?.name}</option>
-                      )
-                    })
-                  }
-                </select>
-              </div>
-            </div>
-
-            <button
-              className={`px-4 py-2 border
-                            ${subCategoryData?.name && subCategoryData?.image && subCategoryData?.category[0] ? "bg-primary-200 hover:bg-primary-100" : "bg-gray-200"}    
-                            font-semibold
-                        `}
+                })
+              }}
             >
-              Submit
-            </button>
+              <option value={""}>Select a category</option>
+              {
+                allCategory.map((category) => (
+                  <option value={category?._id} key={category._id + "subcategory"}>{category?.name}</option>
+                ))
+              }
+            </select>
+          </div>
 
-          </form>
-        </div>
+          <button
+            disabled={!(subCategoryData?.name && subCategoryData?.image && subCategoryData?.category[0])}
+            className="btn-primary btn-block mt-2"
+          >
+            Create sub category
+          </button>
+        </form>
       </div>
-
     </section>
   )
 }

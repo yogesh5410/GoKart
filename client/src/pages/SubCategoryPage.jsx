@@ -7,8 +7,8 @@ import toast from 'react-hot-toast';
 import DisplayTable from '../components/DisplayTable';
 import { createColumnHelper } from '@tanstack/react-table';
 import ViewImage from '../components/ViewImage';
-import { MdDelete  } from "react-icons/md";
-import { HiPencil } from "react-icons/hi"
+import Loading from '../components/Loading';
+import { HiPlus, HiOutlinePencilSquare, HiOutlineTrash } from "react-icons/hi2";
 import EditSubCategory from '../components/EditSubCategory';
 import ConfirmBox from '../components/ConfirmBox'
 
@@ -23,7 +23,7 @@ const SubCategoryPage = () => {
     _id: ""
   })
   const [deleteSubCategory, setDeleteSubCategory] = useState({
-    _id : ""
+    _id: ""
   })
   const [openDeleteCofirmBox, setOpenDeleteConfirmBox] = useState(false)
 
@@ -31,57 +31,60 @@ const SubCategoryPage = () => {
 
   const column = [
     columnHelper.accessor('name', {
-      header: "Name"
+      header: "Name",
+      cell: ({ row }) => <span className="font-medium">{row.original.name}</span>
     }),
     columnHelper.accessor('image', {
       header: "Image",
       cell: ({ row }) => {
-        //console.log("row", row.row.original.image)
-        return <div className="flex justify-center items-center">
+        return <button
+          onClick={() => setImageURL(row.original.image)}
+          className="grid h-10 w-10 place-items-center overflow-hidden rounded-lg border border-line bg-sunken p-1 transition-colors hover:border-brand"
+        >
           <img
             src={row.original.image}
             alt={row.original.name}
-            className="w-8 h-8 cursor-pointer"
-            onClick={()=>{
-              setImageURL(row.original.image)
-            }}
+            className="h-full w-full object-contain"
           />
-        </div>
+        </button>
       }
     }),
     columnHelper.accessor('category', {
-      header: "Category", 
-      cell: ({row}) => {
-        return(
-          <>
-          {
-            row.original.category.map((c, index) => {
-              return (
-                <p key={c._id+"table"} className="shadow-md mx-3 inline-block">{c.name}</p>
-              )
-            })
-          }
-          </>
+      header: "Category",
+      cell: ({ row }) => {
+        return (
+          <div className="flex flex-wrap gap-1.5">
+            {
+              row.original.category.map((c) => (
+                <span key={c._id + "table"} className="chip text-[11px]">{c.name}</span>
+              ))
+            }
+          </div>
         )
       }
-    }), 
+    }),
     columnHelper.accessor("_id", {
       header: "Action",
-      cell: ({row}) => {
-        return(
-          <div className="flex items-center justify-center gap-3">
-            <button onClick={()=>{
-              setOpenEdit(true)
-              setEditData(row.original)
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setOpenEdit(true)
+                setEditData(row.original)
               }}
-              className="p-2 bg-green-100 rounded-full text-green-500 hover:text-green-600 ">
-              <HiPencil size={20}/>
+              aria-label="Edit sub category"
+              className="grid h-8 w-8 place-items-center rounded-full border border-line text-fg-muted transition-colors hover:border-brand hover:bg-brand-soft hover:text-brand">
+              <HiOutlinePencilSquare size={15} />
             </button>
-            <button onClick={()=>{
-              setOpenDeleteConfirmBox(true)
-              setDeleteSubCategory(row.original)
-            }} className="p-2 bg-red-100 rounded-full text-red-500 hover:text-red-600 ">
-              <MdDelete size={20}/>
+            <button
+              onClick={() => {
+                setOpenDeleteConfirmBox(true)
+                setDeleteSubCategory(row.original)
+              }}
+              aria-label="Delete sub category"
+              className="grid h-8 w-8 place-items-center rounded-full border border-line text-fg-muted transition-colors hover:border-critical hover:bg-critical-soft hover:text-critical">
+              <HiOutlineTrash size={15} />
             </button>
           </div>
         )
@@ -109,37 +112,46 @@ const SubCategoryPage = () => {
 
   useEffect(() => {
     fetchSubCategory()
-  }, [])           // renders once only.
+  }, [])
 
 
-  const handleDeleteSubCategory = async()=>{
+  const handleDeleteSubCategory = async () => {
     try {
-        const response = await Axios({
-            ...SummaryApi.deleteSubCategory,
-            data : deleteSubCategory
-        })
+      const response = await Axios({
+        ...SummaryApi.deleteSubCategory,
+        data: deleteSubCategory
+      })
 
-        const { data : responseData } = response
+      const { data: responseData } = response
 
-        if(responseData.success){
-           toast.success(responseData.message)
-           fetchSubCategory()
-           setOpenDeleteConfirmBox(false)
-           setDeleteSubCategory({_id : ""})
-        }
+      if (responseData.success) {
+        toast.success(responseData.message)
+        fetchSubCategory()
+        setOpenDeleteConfirmBox(false)
+        setDeleteSubCategory({ _id: "" })
+      }
     } catch (error) {
       AxiosToastError(error)
     }
-}
+  }
 
   return (
-    <section>
-      <div className="p-2 bg-white shadow-md flex items-center justify-between">
-        <h2 className="font-semibold">Sub Category</h2>
-        <button onClick={() => setOpenAddSubCategory(true)} className="text-sm border border-primary-100 hover:bg-primary-100 py-1 px-2 rounded">Add Sub Category</button>
+    <section className="grid gap-4">
+      <div className="panel-head rounded-card border border-line bg-surface">
+        <div>
+          <p className="eyebrow">Store admin</p>
+          <h1 className="mt-1 font-display text-lg font-semibold">Sub categories</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          {loading && <Loading className="text-brand" />}
+          <button onClick={() => setOpenAddSubCategory(true)} className="btn-primary btn-sm">
+            <HiPlus size={15} />
+            Add sub category
+          </button>
+        </div>
       </div>
 
-      <div className="overflow-auto w-full max-w-[95vw]">
+      <div className="w-full max-w-[95vw] lg:max-w-none">
         <DisplayTable
           data={data}
           columns={column}
@@ -148,7 +160,7 @@ const SubCategoryPage = () => {
 
       {
         openAddSubCategory && (
-          <UploadSubCategoryModel 
+          <UploadSubCategoryModel
             close={() => setOpenAddSubCategory(false)}
             fetchData={fetchSubCategory}
           />
@@ -157,23 +169,25 @@ const SubCategoryPage = () => {
 
       {
         imageURL &&
-        <ViewImage url={imageURL} close={() => setImageURL("")}/>
+        <ViewImage url={imageURL} close={() => setImageURL("")} />
       }
 
       {
-        openEdit && 
-        <EditSubCategory 
+        openEdit &&
+        <EditSubCategory
           data={editData}
-          close={()=>setOpenEdit(false)}
-          fetchData={fetchSubCategory}/>
+          close={() => setOpenEdit(false)}
+          fetchData={fetchSubCategory} />
       }
 
       {
-        openDeleteCofirmBox && 
+        openDeleteCofirmBox &&
         <ConfirmBox
-          cancel={()=>setOpenDeleteConfirmBox(false)}
-          close={()=>setOpenDeleteConfirmBox(false)}
-          confirm={handleDeleteSubCategory}/>
+          cancel={() => setOpenDeleteConfirmBox(false)}
+          close={() => setOpenDeleteConfirmBox(false)}
+          confirm={handleDeleteSubCategory}
+          title="Delete sub category"
+          message="This removes the sub category from the store. Products already using it stay put." />
       }
 
     </section>

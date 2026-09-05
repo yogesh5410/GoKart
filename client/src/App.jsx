@@ -21,7 +21,6 @@ function App() {
 
   const fetchUser = async () => {
     const userData = await fetchUserDetails()
-    //console.log(userData)
     dispatch(setUserDetails(userData?.data))
   }
 
@@ -31,7 +30,6 @@ function App() {
       const response = await Axios({
         ...SummaryApi.getCategory
       })
-      //console.log(response)
       const { data: responseData } = response
 
       if (responseData.success) {
@@ -52,7 +50,6 @@ function App() {
       const response = await Axios({
         ...SummaryApi.getSubCategory
       })
-      //console.log(response)
       const { data: responseData } = response
 
       if (responseData.success) {
@@ -75,14 +72,33 @@ function App() {
 
   return (
     <GlobalProvider>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen flex-col bg-ground">
         <Header />
         <main className="flex-grow">
           <Outlet />
         </main>
-        <Footer/>
+        <Footer />
       </div>
-      <Toaster />
+
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          className: 'font-sans',
+          style: {
+            background: 'rgb(var(--k-surface))',
+            color: 'rgb(var(--k-fg))',
+            border: '1px solid rgb(var(--k-line))',
+            borderRadius: '14px',
+            boxShadow: '0 18px 40px -18px rgb(var(--k-shadow) / 0.45)',
+            fontSize: '14px',
+            padding: '10px 14px',
+          },
+          success: { iconTheme: { primary: 'rgb(var(--k-positive))', secondary: 'rgb(var(--k-surface))' } },
+          error: { iconTheme: { primary: 'rgb(var(--k-critical))', secondary: 'rgb(var(--k-surface))' } },
+        }}
+      />
+
       {
         location.pathname !== '/checkout' &&
         (

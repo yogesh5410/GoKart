@@ -1,19 +1,24 @@
 import React from 'react'
-import { IoClose } from 'react-icons/io5'
+import { HiXMark } from 'react-icons/hi2'
 
-const ViewImage = ({url,close}) => {
+const ViewImage = ({ url, close }) => {
   return (
-    <div className='fixed top-0 bottom-0 right-0 left-0 bg-neutral-900 bg-opacity-70 flex justify-center items-center z-50 p-4'>
-        <div className='w-full max-w-md max-h-[80vh] p-4 bg-white'>
-            <button onClick={close} className='w-fit ml-auto block'>
-                <IoClose size={25}/>
-            </button>
-            <img 
-                src={url}
-                alt='full screen'
-                className='w-full h-full object-scale-down'
-            />
+    <div className="overlay flex items-center justify-center p-4">
+      <div className="modal max-w-lg overflow-hidden">
+        <div className="modal-head">
+          <h2 className="font-display text-sm font-semibold">Preview</h2>
+          <button onClick={close} aria-label="Close" className="icon-btn">
+            <HiXMark size={22} />
+          </button>
         </div>
+        <div className="max-h-[70vh] bg-sunken p-6">
+          <img
+            src={url}
+            alt="Full size preview"
+            className="mx-auto max-h-[60vh] w-full object-contain"
+          />
+        </div>
+      </div>
     </div>
   )
 }

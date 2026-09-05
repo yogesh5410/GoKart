@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import AxiosToastError from '../utils/AxiosToastError'
 import Loading from './Loading'
 import { useSelector } from 'react-redux'
-import { FaMinus, FaPlus } from "react-icons/fa6";
+import { HiMinusSmall, HiPlusSmall } from "react-icons/hi2";
 
 const AddToCartButton = ({ data }) => {
     const { fetchCartItem, updateCartItem, deleteCartItem } = useGlobalContext()
@@ -14,7 +14,7 @@ const AddToCartButton = ({ data }) => {
     const cartItem = useSelector(state => state.cartItem.cart)
     const [isAvailableCart, setIsAvailableCart] = useState(false)
     const [qty, setQty] = useState(0)
-    const [cartItemDetails,setCartItemsDetails] = useState()
+    const [cartItemDetails, setCartItemsDetails] = useState()
 
     const handleADDTocart = async (e) => {
         e.preventDefault()
@@ -57,48 +57,63 @@ const AddToCartButton = ({ data }) => {
     }, [data, cartItem])
 
 
-    const increaseQty = async(e) => {
+    const increaseQty = async (e) => {
         e.preventDefault()
         e.stopPropagation()
-    
-       const response = await  updateCartItem(cartItemDetails?._id,qty+1)
-        
-       if(response.success){
-        toast.success("Item added")
-       }
+
+        const response = await updateCartItem(cartItemDetails?._id, qty + 1)
+
+        if (response.success) {
+            toast.success("Item added")
+        }
     }
 
-    const decreaseQty = async(e) => {
+    const decreaseQty = async (e) => {
         e.preventDefault()
         e.stopPropagation()
-        if(qty === 1){
+        if (qty === 1) {
             deleteCartItem(cartItemDetails?._id)
-        }else{
-            const response = await updateCartItem(cartItemDetails?._id,qty-1)
+        } else {
+            const response = await updateCartItem(cartItemDetails?._id, qty - 1)
 
-            if(response.success){
+            if (response.success) {
                 toast.success("Item remove")
             }
         }
     }
+
     return (
-        <div className='w-full max-w-[150px]'>
+        <div className="w-full max-w-[130px]">
             {
                 isAvailableCart ? (
-                    <div className='flex w-full h-full'>
-                        <button onClick={decreaseQty} className='bg-green-600 hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaMinus /></button>
+                    <div className="flex items-center overflow-hidden rounded-pill border border-brand/50 bg-brand-soft">
+                        <button
+                            onClick={decreaseQty}
+                            aria-label="Decrease quantity"
+                            className="grid h-8 w-8 shrink-0 place-items-center text-brand transition-colors hover:bg-brand hover:text-brand-on"
+                        >
+                            <HiMinusSmall size={16} />
+                        </button>
 
-                        <p className='flex-1 w-full font-semibold px-1 flex items-center justify-center'>{qty}</p>
+                        <span className="flex-1 text-center text-sm font-semibold tabular-nums text-fg">{qty}</span>
 
-                        <button onClick={increaseQty} className='bg-green-600 hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaPlus /></button>
+                        <button
+                            onClick={increaseQty}
+                            aria-label="Increase quantity"
+                            className="grid h-8 w-8 shrink-0 place-items-center text-brand transition-colors hover:bg-brand hover:text-brand-on"
+                        >
+                            <HiPlusSmall size={16} />
+                        </button>
                     </div>
                 ) : (
-                    <button onClick={handleADDTocart} className='bg-green-600 hover:bg-green-700 text-white px-2 lg:px-4 py-1 rounded'>
+                    <button
+                        onClick={handleADDTocart}
+                        className="btn-primary h-8 w-full px-4 text-xs uppercase tracking-wide"
+                    >
                         {loading ? <Loading /> : "Add"}
                     </button>
                 )
             }
-
         </div>
     )
 }

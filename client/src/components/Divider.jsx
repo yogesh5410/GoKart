@@ -1,8 +1,8 @@
 import React from 'react'
 
-const Divider = () => {
+const Divider = ({ className = '' }) => {
   return (
-    <div className="p-[0.5px] bg-slate-500 my-2"></div>
+    <div className={`divider my-3 ${className}`} />
   )
 }
 

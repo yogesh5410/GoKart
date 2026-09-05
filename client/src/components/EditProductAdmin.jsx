@@ -1,21 +1,18 @@
 import React, { useState } from 'react'
-import { FaCloudUploadAlt } from "react-icons/fa";
+import { HiOutlineCloudArrowUp, HiOutlineTrash, HiXMark, HiPlus } from 'react-icons/hi2'
 import uploadImage from '../utils/UploadImage';
 import Loading from '../components/Loading';
 import ViewImage from '../components/ViewImage';
-import { MdDelete } from "react-icons/md";
 import { useSelector } from 'react-redux'
-import { IoClose } from "react-icons/io5";
 import AddFieldComponent from '../components/AddFieldComponent';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import AxiosToastError from '../utils/AxiosToastError';
 import successAlert from '../utils/SuccessAlert';
-import { useEffect } from 'react';
 
-const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
+const EditProductAdmin = ({ close, data: propsData, fetchProductData }) => {
   const [data, setData] = useState({
-    _id : propsData._id,
+    _id: propsData._id,
     name: propsData.name,
     image: propsData.image,
     category: propsData.category,
@@ -112,7 +109,6 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("data", data)
 
     try {
       const response = await Axios({
@@ -123,7 +119,7 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
 
       if (responseData.success) {
         successAlert(responseData.message)
-        if(close){
+        if (close) {
           close()
         }
         fetchProductData()
@@ -144,247 +140,270 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
     } catch (error) {
       AxiosToastError(error)
     }
-
-
   }
 
   return (
-    <section className='fixed top-0 right-0 left-0 bottom-0 bg-black z-50 bg-opacity-70 p-4'>
-      <div className='bg-white w-full p-4 max-w-2xl mx-auto rounded overflow-y-auto h-full max-h-[95vh]'>
-        <section className=''>
-          <div className='p-2 bg-white shadow-md flex items-center justify-between'>
-            <h2 className='font-semibold'>Upload Product</h2>
-            <button onClick={close}>
-              <IoClose size={20}/>
-            </button>
+    <section className="overlay flex items-start justify-center p-4">
+      <div className="modal my-4 flex max-h-[92vh] w-full max-w-3xl flex-col">
+
+        <div className="modal-head shrink-0">
+          <div>
+            <p className="eyebrow">Store admin</p>
+            <h2 className="mt-1 font-display text-base font-semibold">Edit product</h2>
           </div>
-          <div className='grid p-3'>
-            <form className='grid gap-4' onSubmit={handleSubmit}>
-              <div className='grid gap-1'>
-                <label htmlFor='name' className='font-medium'>Name</label>
-                <input
-                  id='name'
-                  type='text'
-                  placeholder='Enter product name'
-                  name='name'
-                  value={data.name}
-                  onChange={handleChange}
-                  required
-                  className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
-                />
-              </div>
-              <div className='grid gap-1'>
-                <label htmlFor='description' className='font-medium'>Description</label>
-                <textarea
-                  id='description'
-                  type='text'
-                  placeholder='Enter product description'
-                  name='description'
-                  value={data.description}
-                  onChange={handleChange}
-                  required
-                  multiple
-                  rows={3}
-                  className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded resize-none'
-                />
-              </div>
-              <div>
-                <p className='font-medium'>Image</p>
-                <div>
-                  <label htmlFor='productImage' className='bg-blue-50 h-24 border rounded flex justify-center items-center cursor-pointer'>
-                    <div className='text-center flex justify-center items-center flex-col'>
-                      {
-                        imageLoading ? <Loading /> : (
-                          <>
-                            <FaCloudUploadAlt size={35} />
-                            <p>Upload Image</p>
-                          </>
-                        )
-                      }
-                    </div>
-                    <input
-                      type='file'
-                      id='productImage'
-                      className='hidden'
-                      accept='image/*'
-                      onChange={handleUploadImage}
-                    />
-                  </label>
-                  {/**display uploded image*/}
-                  <div className='flex flex-wrap gap-4'>
-                    {
-                      data.image.map((img, index) => {
-                        return (
-                          <div key={img + index} className='h-20 mt-1 w-20 min-w-20 bg-blue-50 border relative group'>
-                            <img
-                              src={img}
-                              alt={img}
-                              className='w-full h-full object-scale-down cursor-pointer'
-                              onClick={() => setViewImageURL(img)}
-                            />
-                            <div onClick={() => handleDeleteImage(index)} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
-                              <MdDelete />
-                            </div>
-                          </div>
-                        )
-                      })
-                    }
-                  </div>
+          <button onClick={close} aria-label="Close" className="icon-btn">
+            <HiXMark size={22} />
+          </button>
+        </div>
+
+        <form className="grid gap-5 overflow-y-auto scrollbar-slim p-5" onSubmit={handleSubmit}>
+
+          <div className="grid gap-1.5">
+            <label htmlFor='name' className="label">Name</label>
+            <input
+              id='name'
+              type="text"
+              placeholder='Enter product name'
+              name='name'
+              value={data.name}
+              onChange={handleChange}
+              required
+              className="input"
+            />
+          </div>
+
+          <div className="grid gap-1.5">
+            <label htmlFor='description' className="label">Description</label>
+            <textarea
+              id='description'
+              placeholder='Enter product description'
+              name='description'
+              value={data.description}
+              onChange={handleChange}
+              required
+              rows={4}
+              className="input resize-none"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <p className="label">Images</p>
+            <label
+              htmlFor='productImage'
+              className="flex h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line-strong bg-sunken text-fg-muted transition-colors hover:border-brand hover:text-brand"
+            >
+              {
+                imageLoading ? <Loading label="Uploading" /> : (
+                  <>
+                    <HiOutlineCloudArrowUp size={26} />
+                    <span className="text-sm font-medium">Upload another image</span>
+                  </>
+                )
+              }
+              <input
+                type='file'
+                id='productImage'
+                className="hidden"
+                accept='image/*'
+                onChange={handleUploadImage}
+              />
+            </label>
+
+            {
+              data.image[0] && (
+                <div className="flex flex-wrap gap-3">
+                  {
+                    data.image.map((img, index) => {
+                      return (
+                        <div key={img + index} className="group relative h-20 w-20 overflow-hidden rounded-xl border border-line bg-sunken p-1.5">
+                          <img
+                            src={img}
+                            alt={`Product image ${index + 1}`}
+                            className="h-full w-full cursor-pointer object-contain"
+                            onClick={() => setViewImageURL(img)}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(index)}
+                            aria-label="Remove image"
+                            className="absolute bottom-1 right-1 grid h-6 w-6 place-items-center rounded-full bg-critical text-white opacity-0 transition-opacity group-hover:opacity-100"
+                          >
+                            <HiOutlineTrash size={12} />
+                          </button>
+                        </div>
+                      )
+                    })
+                  }
                 </div>
+              )
+            }
+          </div>
 
-              </div>
-              <div className='grid gap-1'>
-                <label className='font-medium'>Category</label>
-                <div>
-                  <select
-                    className='bg-blue-50 border w-full p-2 rounded'
-                    value={selectCategory}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      const category = allCategory.find(el => el._id === value)
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid content-start gap-2">
+              <label className="label">Category</label>
+              <select
+                className="select"
+                value={selectCategory}
+                onChange={(e) => {
+                  const value = e.target.value
+                  const category = allCategory.find(el => el._id === value)
 
-                      setData((preve) => {
-                        return {
-                          ...preve,
-                          category: [...preve.category, category],
-                        }
-                      })
-                      setSelectCategory("")
-                    }}
-                  >
-                    <option value={""}>Select Category</option>
-                    {
-                      allCategory.map((c, index) => {
-                        return (
-                          <option value={c?._id}>{c.name}</option>
-                        )
-                      })
+                  setData((preve) => {
+                    return {
+                      ...preve,
+                      category: [...preve.category, category],
                     }
-                  </select>
-                  <div className='flex flex-wrap gap-3'>
-                    {
-                      data.category.map((c, index) => {
-                        return (
-                          <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
-                            <p>{c.name}</p>
-                            <div className='hover:text-red-500 cursor-pointer' onClick={() => handleRemoveCategory(index)}>
-                              <IoClose size={20} />
-                            </div>
-                          </div>
-                        )
-                      })
+                  })
+                  setSelectCategory("")
+                }}
+              >
+                <option value={""}>Select category</option>
+                {
+                  allCategory.map((c) => (
+                    <option key={c._id + "editcat"} value={c?._id}>{c.name}</option>
+                  ))
+                }
+              </select>
+
+              <div className="flex flex-wrap gap-2">
+                {
+                  data.category.map((c, index) => (
+                    <span key={c._id + index + "productsection"} className="chip-brand pr-1">
+                      {c.name}
+                      <button
+                        type="button"
+                        aria-label={`Remove ${c.name}`}
+                        onClick={() => handleRemoveCategory(index)}
+                        className="grid h-5 w-5 place-items-center rounded-full transition-colors hover:bg-brand hover:text-brand-on"
+                      >
+                        <HiXMark size={13} />
+                      </button>
+                    </span>
+                  ))
+                }
+              </div>
+            </div>
+
+            <div className="grid content-start gap-2">
+              <label className="label">Sub category</label>
+              <select
+                className="select"
+                value={selectSubCategory}
+                onChange={(e) => {
+                  const value = e.target.value
+                  const subCategory = allSubCategory.find(el => el._id === value)
+
+                  setData((preve) => {
+                    return {
+                      ...preve,
+                      subCategory: [...preve.subCategory, subCategory]
                     }
-                  </div>
-                </div>
+                  })
+                  setSelectSubCategory("")
+                }}
+              >
+                <option value={""}>Select sub category</option>
+                {
+                  allSubCategory.map((c) => (
+                    <option key={c._id + "editsubcat"} value={c?._id}>{c.name}</option>
+                  ))
+                }
+              </select>
+
+              <div className="flex flex-wrap gap-2">
+                {
+                  data.subCategory.map((c, index) => (
+                    <span key={c._id + index + "productsection"} className="chip-brand pr-1">
+                      {c.name}
+                      <button
+                        type="button"
+                        aria-label={`Remove ${c.name}`}
+                        onClick={() => handleRemoveSubCategory(index)}
+                        className="grid h-5 w-5 place-items-center rounded-full transition-colors hover:bg-brand hover:text-brand-on"
+                      >
+                        <HiXMark size={13} />
+                      </button>
+                    </span>
+                  ))
+                }
               </div>
-              <div className='grid gap-1'>
-                <label className='font-medium'>Sub Category</label>
-                <div>
-                  <select
-                    className='bg-blue-50 border w-full p-2 rounded'
-                    value={selectSubCategory}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      const subCategory = allSubCategory.find(el => el._id === value)
+            </div>
+          </div>
 
-                      setData((preve) => {
-                        return {
-                          ...preve,
-                          subCategory: [...preve.subCategory, subCategory]
-                        }
-                      })
-                      setSelectSubCategory("")
-                    }}
-                  >
-                    <option value={""} className='text-neutral-600'>Select Sub Category</option>
-                    {
-                      allSubCategory.map((c, index) => {
-                        return (
-                          <option value={c?._id}>{c.name}</option>
-                        )
-                      })
-                    }
-                  </select>
-                  <div className='flex flex-wrap gap-3'>
-                    {
-                      data.subCategory.map((c, index) => {
-                        return (
-                          <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
-                            <p>{c.name}</p>
-                            <div className='hover:text-red-500 cursor-pointer' onClick={() => handleRemoveSubCategory(index)}>
-                              <IoClose size={20} />
-                            </div>
-                          </div>
-                        )
-                      })
-                    }
-                  </div>
-                </div>
-              </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-1.5">
+              <label htmlFor='unit' className="label">Unit</label>
+              <input
+                id='unit'
+                type='text'
+                placeholder='Enter product unit'
+                name='unit'
+                value={data.unit}
+                onChange={handleChange}
+                required
+                className="input"
+              />
+            </div>
 
-              <div className='grid gap-1'>
-                <label htmlFor='unit' className='font-medium'>Unit</label>
-                <input
-                  id='unit'
-                  type='text'
-                  placeholder='Enter product unit'
-                  name='unit'
-                  value={data.unit}
-                  onChange={handleChange}
-                  required
-                  className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
-                />
-              </div>
+            <div className="grid gap-1.5">
+              <label htmlFor='stock' className="label">Stock</label>
+              <input
+                id='stock'
+                type='number'
+                placeholder='Enter product stock'
+                name='stock'
+                value={data.stock}
+                onChange={handleChange}
+                required
+                className="input"
+              />
+            </div>
 
-              <div className='grid gap-1'>
-                <label htmlFor='stock' className='font-medium'>Number of Stock</label>
-                <input
-                  id='stock'
-                  type='number'
-                  placeholder='Enter product stock'
-                  name='stock'
-                  value={data.stock}
-                  onChange={handleChange}
-                  required
-                  className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
-                />
-              </div>
+            <div className="grid gap-1.5">
+              <label htmlFor='price' className="label">Price (₹)</label>
+              <input
+                id='price'
+                type='number'
+                placeholder='Enter product price'
+                name='price'
+                value={data.price}
+                onChange={handleChange}
+                required
+                className="input"
+              />
+            </div>
 
-              <div className='grid gap-1'>
-                <label htmlFor='price' className='font-medium'>Price</label>
-                <input
-                  id='price'
-                  type='number'
-                  placeholder='Enter product price'
-                  name='price'
-                  value={data.price}
-                  onChange={handleChange}
-                  required
-                  className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
-                />
-              </div>
+            <div className="grid gap-1.5">
+              <label htmlFor='discount' className="label">Discount (%)</label>
+              <input
+                id='discount'
+                type='number'
+                placeholder='Enter product discount'
+                name='discount'
+                value={data.discount}
+                onChange={handleChange}
+                required
+                className="input"
+              />
+            </div>
+          </div>
 
-              <div className='grid gap-1'>
-                <label htmlFor='discount' className='font-medium'>Discount</label>
-                <input
-                  id='discount'
-                  type='number'
-                  placeholder='Enter product discount'
-                  name='discount'
-                  value={data.discount}
-                  onChange={handleChange}
-                  required
-                  className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
-                />
-              </div>
+          <div className="grid gap-3">
+            <div className="flex items-center justify-between gap-4">
+              <p className="label">Extra details</p>
+              <button type="button" onClick={() => setOpenAddField(true)} className="btn-ghost btn-sm text-brand hover:bg-brand-soft">
+                <HiPlus size={15} />
+                Add field
+              </button>
+            </div>
 
-
-              {/**add more field**/}
+            <div className="grid gap-4 sm:grid-cols-2">
               {
                 Object?.keys(data?.more_details)?.map((k, index) => {
                   return (
-                    <div className='grid gap-1'>
-                      <label htmlFor={k} className='font-medium'>{k}</label>
+                    <div className="grid gap-1.5" key={k + index}>
+                      <label htmlFor={k} className="label">{k}</label>
                       <input
                         id={k}
                         type='text'
@@ -402,46 +421,37 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
                           })
                         }}
                         required
-                        className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                        className="input"
                       />
                     </div>
                   )
                 })
               }
-
-              <div onClick={() => setOpenAddField(true)} className=' hover:bg-primary-200 bg-white py-1 px-3 w-32 text-center font-semibold border border-primary-200 hover:text-neutral-900 cursor-pointer rounded'>
-                Add Fields
-              </div>
-
-              <button
-                className='bg-primary-100 hover:bg-primary-200 py-2 rounded font-semibold'
-              >
-                Update Product
-              </button>
-            </form>
+            </div>
           </div>
 
-          {
-            ViewImageURL && (
-              <ViewImage url={ViewImageURL} close={() => setViewImageURL("")} />
-            )
-          }
-
-          {
-            openAddField && (
-              <AddFieldComponent
-                value={fieldName}
-                onChange={(e) => setFieldName(e.target.value)}
-                submit={handleAddField}
-                close={() => setOpenAddField(false)}
-              />
-            )
-          }
-        </section>
+          <button className="btn-primary btn-block btn-lg">Save changes</button>
+        </form>
       </div>
+
+      {
+        ViewImageURL && (
+          <ViewImage url={ViewImageURL} close={() => setViewImageURL("")} />
+        )
+      }
+
+      {
+        openAddField && (
+          <AddFieldComponent
+            value={fieldName}
+            onChange={(e) => setFieldName(e.target.value)}
+            submit={handleAddField}
+            close={() => setOpenAddField(false)}
+          />
+        )
+      }
     </section>
   )
 }
 
 export default EditProductAdmin
-

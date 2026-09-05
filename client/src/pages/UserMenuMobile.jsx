@@ -1,14 +1,16 @@
 import React from 'react'
 import UserMenu from '../components/UserMenu.jsx'
-import { IoClose } from 'react-icons/io5'
+import { HiXMark } from 'react-icons/hi2'
 
 const UserMenuMobile = () => {
   return (
-    <section className="bg-white h-full w-full py-2">
-      <button onClick={() => window.history.back()} className="text-neutral-800 block w-fit ml-auto">
-        <IoClose size={30} />
-      </button>
-      <div className="container mx-auto px-3 pb-8">
+    <section className="container mx-auto py-4">
+      <div className="flex justify-end">
+        <button onClick={() => window.history.back()} aria-label="Close" className="icon-btn">
+          <HiXMark size={26} />
+        </button>
+      </div>
+      <div className="card mt-2 p-4">
         <UserMenu />
       </div>
     </section>

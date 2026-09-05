@@ -1,28 +1,32 @@
 import React from 'react'
-import { IoClose } from "react-icons/io5";
+import { HiXMark } from "react-icons/hi2";
 
-const AddFieldComponent = ({close,value,onChange,submit}) => {
+const AddFieldComponent = ({ close, value, onChange, submit }) => {
   return (
-   <section className='fixed top-0 bottom-0 right-0 left-0 bg-neutral-900 bg-opacity-70 z-50 flex justify-center items-center p-4'>
-        <div className='bg-white rounded p-4 w-full max-w-md'>
-            <div className='flex items-center justify-between gap-3'>
-                <h1 className='font-semibold'>Add Field</h1>
-                <button onClick={close}>
-                    <IoClose size={25}/>
-                </button>
-            </div>
-            <input
-                 className='bg-blue-50 my-3 p-2 border outline-none focus-within:border-primary-100 rounded w-full '
-                 placeholder='Enter field name'
-                 value={value}
-                 onChange={onChange}
-            />
-            <button
-                onClick={submit}
-                className='bg-primary-100 hover:bg-orange-400 px-4 py-2 rounded mx-auto w-fit block'
-            >Add Field</button>
+    <section className="overlay flex items-center justify-center p-4">
+      <div className="modal max-w-md">
+        <div className="modal-head">
+          <h2 className="font-display text-base font-semibold">Add a field</h2>
+          <button onClick={close} aria-label="Close" className="icon-btn">
+            <HiXMark size={22} />
+          </button>
         </div>
-   </section>
+
+        <div className="grid gap-4 p-5">
+          <div className="grid gap-1.5">
+            <label htmlFor="fieldName" className="label">Field name</label>
+            <input
+              id="fieldName"
+              className="input"
+              placeholder="e.g. Shelf life"
+              value={value}
+              onChange={onChange}
+            />
+          </div>
+          <button onClick={submit} className="btn-primary btn-block">Add field</button>
+        </div>
+      </div>
+    </section>
   )
 }
 

@@ -7,56 +7,69 @@ import AddToCartButton from './AddToCartButton'
 
 const CardProduct = ({ data }) => {
     const url = `/product/${valideURLConvert(data.name)}-${data._id}`
+    const hasDiscount = Boolean(data.discount)
+    const outOfStock = data.stock == 0
 
     return (
-        <Link to={url} className='border py-2 lg:p-4 grid gap-1 lg:gap-3 min-w-36 lg:min-w-52 rounded cursor-pointer bg-white' >
-      <div className='min-h-20 w-full max-h-24 lg:max-h-32 rounded overflow-hidden'>
-            <img 
-                src={data.image[0]}
-                className='w-full h-full object-scale-down lg:scale-125'
-            />
-      </div>
-      <div className='flex items-center gap-1'>
-        <div className='rounded text-xs w-fit p-[1px] px-2 text-green-600 bg-green-50'>
-              10 min 
-        </div>
-        <div>
-            {
-              Boolean(data.discount) && (
-                <p className='text-green-600 bg-green-100 px-2 w-fit text-xs rounded-full'>{data.discount}% discount</p>
-              )
-            }
-        </div>
-      </div>
-      <div className='px-2 lg:px-0 font-medium text-ellipsis text-sm lg:text-base line-clamp-2'>
-        {data.name}
-      </div>
-      <div className='w-fit gap-1 px-2 lg:px-0 text-sm lg:text-base'>
-        {data.unit} 
-        
-      </div>
+        <Link
+            to={url}
+            className="card card-hover group flex w-full min-w-[9.5rem] flex-col overflow-hidden lg:min-w-[13rem]"
+        >
+            {/* image */}
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-sunken p-3">
+                <img
+                    src={data.image[0]}
+                    alt={data.name}
+                    loading="lazy"
+                    className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                />
+                {
+                    hasDiscount && (
+                        <span className="absolute left-2.5 top-2.5 rounded-pill bg-brand px-2 py-0.5 text-[11px] font-semibold text-brand-on shadow-card">
+                            {data.discount}% off
+                        </span>
+                    )
+                }
+                {
+                    outOfStock && (
+                        <span className="absolute right-2.5 top-2.5 rounded-pill bg-critical-soft px-2 py-0.5 text-[11px] font-semibold text-critical">
+                            Sold out
+                        </span>
+                    )
+                }
+            </div>
 
-      <div className='px-2 lg:px-0 flex items-center justify-between gap-1 lg:gap-3 text-sm lg:text-base'>
-        <div className='flex items-center gap-1'>
-          <div className='font-semibold'>
-              {DisplayPriceInRupees(pricewithDiscount(data.price,data.discount))} 
-          </div>
-          
-          
-        </div>
-        <div className=''>
-          {
-            data.stock == 0 ? (
-              <p className='text-red-500 text-sm text-center'>Out of stock</p>
-            ) : (
-              <AddToCartButton data={data} />
-            )
-          }
-            
-        </div>
-      </div>
+            {/* body */}
+            <div className="flex flex-1 flex-col gap-1 p-3">
+                <p className="line-clamp-2 text-sm font-medium leading-snug text-fg">{data.name}</p>
+                <p className="text-xs text-fg-faint">{data.unit}</p>
 
-    </Link>
+                <div className="mt-auto flex items-end justify-between gap-2 pt-3">
+                    <div className="flex flex-col leading-tight">
+                        <span className="price text-[15px]">
+                            {DisplayPriceInRupees(pricewithDiscount(data.price, data.discount))}
+                        </span>
+                        {
+                            hasDiscount && (
+                                <span className="text-xs text-fg-faint line-through">
+                                    {DisplayPriceInRupees(data.price)}
+                                </span>
+                            )
+                        }
+                    </div>
+
+                    <div>
+                        {
+                            outOfStock ? (
+                                <span className="text-xs font-medium text-critical">Out of stock</span>
+                            ) : (
+                                <AddToCartButton data={data} />
+                            )
+                        }
+                    </div>
+                </div>
+            </div>
+        </Link>
     )
 }
 

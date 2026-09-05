@@ -4,6 +4,7 @@ import SummaryApi from '../common/SummaryApi'
 import { Link, useParams } from 'react-router-dom'
 import AxiosToastError from '../utils/AxiosToastError'
 import Loading from '../components/Loading'
+import CardLoading from '../components/CardLoading'
 import CardProduct from '../components/CardProduct'
 import { useSelector } from 'react-redux'
 import { valideURLConvert } from '../utils/valideURLConvert'
@@ -17,16 +18,12 @@ const ProductListPage = () => {
   const AllSubCategory = useSelector(state => state.product.allSubCategory)
   const [DisplaySubCatory, setDisplaySubCategory] = useState([])
 
-  //console.log(params)
-
   const subCategory = params?.subCategory?.split("-")
   const subCategoryName = subCategory?.slice(0, subCategory?.length - 1)?.join(" ")
 
-  const categoryId = params.category.split("-").slice(-1)[0]  //[0] to make array into string
-    // params.category → A string like "electronics-123".
-    // .split("-") → Splits the string into an array: ["electronics", "123"].
-    // .slice(-1) → Takes the last element: ["123"].
-    // [0] → Extracts the first (and only) element: "123"
+  const categoryParts = params.category.split("-")
+  const categoryName = categoryParts.slice(0, categoryParts.length - 1).join(" ")
+  const categoryId = categoryParts.slice(-1)[0]
   const subCategoryId = params.subCategory.split("-").slice(-1)[0]
 
 
@@ -64,77 +61,104 @@ const ProductListPage = () => {
     fetchProductdata()
   }, [params])
 
- //let i=0;
   useEffect(() => {
     const sub = AllSubCategory.filter(s => {
-      const filterData = s.category.some(el => {    //checking in array
+      const filterData = s.category.some(el => {
         return el._id == categoryId
       })
 
       return filterData ? filterData : null
     })
     setDisplaySubCategory(sub)
-    //console.log(DisplaySubCatory, i++)
   }, [params, AllSubCategory])
 
   return (
-    <section className='sticky top-24 lg:top-20'>
-      <div className='container sticky top-24  mx-auto grid grid-cols-[120px,1fr]  md:grid-cols-[200px,1fr] lg:grid-cols-[280px,1fr] '>
-        {/**sub category **/}
-        <div className=' min-h-[88vh] max-h-[88vh] overflow-y-scroll  grid gap-1 shadow-md scrollbarCustom bg-white py-2'>
-          {
-            DisplaySubCatory.map((s, index) => {
-               const link = `/${valideURLConvert(s?.category[0]?.name)}-${s?.category[0]?._id}/${valideURLConvert(s.name)}-${s._id}`
-              return (
-                <Link to={link} className={`w-full p-2 lg:flex items-center lg:w-full lg:h-16 box-border lg:gap-4 border-b 
-                  hover:bg-green-300 cursor-pointer
-                  ${subCategoryId === s._id ? "bg-green-100" : ""}
-                `}
-                >
-                  <div className='w-fit max-w-28 mx-auto lg:mx-0 bg-white rounded  box-border' >
-                    <img
-                      src={s.image}
-                      alt='subCategory'
-                      className=' w-14 lg:h-14 lg:w-12 h-full object-scale-down'
-                    />
-                  </div>
-                  <p className='mt-2 lg:mt-0 text-sm text-center lg:text-left lg:text-base'>{s.name}</p>
-                </Link>
-              )
-            })
-          }
-        </div>
+    <section className="container mx-auto py-6">
 
+      {/* breadcrumb */}
+      <nav className="mb-4 flex items-center gap-2 text-xs text-fg-faint">
+        <Link to="/" className="transition-colors hover:text-brand">Home</Link>
+        <span>/</span>
+        <span className="capitalize">{categoryName}</span>
+        <span>/</span>
+        <span className="font-medium capitalize text-fg">{subCategoryName}</span>
+      </nav>
 
-        {/**Product **/}
-        <div className='sticky top-2'>
-          <div className='bg-white shadow-md p-4 z-10'>
-            <h3 className='font-semibold'>{subCategoryName}</h3>
+      <div className="grid gap-5 lg:grid-cols-[260px,1fr]">
+
+        {/***** sub category rail *****/}
+        <aside className="lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)]">
+          <div className="panel h-full overflow-hidden">
+            <p className="eyebrow border-b border-line px-4 py-3">In this aisle</p>
+            <div className="grid max-h-[22vh] gap-1 overflow-y-auto scrollbar-slim p-2 lg:max-h-[calc(100%-3rem)]">
+              {
+                DisplaySubCatory.map((s) => {
+                  const link = `/${valideURLConvert(s?.category[0]?.name)}-${s?.category[0]?._id}/${valideURLConvert(s.name)}-${s._id}`
+                  const active = subCategoryId === s._id
+
+                  return (
+                    <Link
+                      key={s._id + "subcategoryRail"}
+                      to={link}
+                      className={`flex items-center gap-3 rounded-xl p-2 transition-colors
+                        ${active
+                          ? "bg-brand-soft text-brand ring-1 ring-brand/40"
+                          : "text-fg-muted hover:bg-sunken hover:text-fg"}`}
+                    >
+                      <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-lg border border-line bg-surface p-1">
+                        <img
+                          src={s.image}
+                          alt={s.name}
+                          loading="lazy"
+                          className="h-full w-full object-contain"
+                        />
+                      </span>
+                      <span className="text-sm font-medium leading-tight">{s.name}</span>
+                    </Link>
+                  )
+                })
+              }
+            </div>
           </div>
-          <div>
+        </aside>
 
-           <div className='min-h-[80vh] max-h-[80vh] overflow-y-auto relative '>
-            <div className=' grid justify-items-center grid-cols-1 md:grid-cols-3 lg:grid-cols-5 p-8 gap-4 '>
-                {
-                  data.map((p, index) => {
-                    return (
-                      <CardProduct
-                        data={p}
-                        key={p._id + "productSubCategory" + index}
-                      />
-                    )
-                  })
-                }
-              </div>
-           </div>
+        {/***** products *****/}
+        <div>
+          <div className="panel mb-4 flex items-center justify-between gap-4 px-4 py-3">
+            <div>
+              <h1 className="font-display text-lg font-semibold capitalize">{subCategoryName}</h1>
+              <p className="text-xs text-fg-faint">{totalPage} product{totalPage === 1 ? '' : 's'}</p>
+            </div>
+            {loading && <Loading className="text-brand" />}
+          </div>
 
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
             {
-              loading && (
-                <Loading />
-              )
+              data.map((p, index) => (
+                <CardProduct
+                  data={p}
+                  key={p._id + "productSubCategory" + index}
+                />
+              ))
             }
 
+            {
+              loading && !data[0] && (
+                new Array(8).fill(null).map((_, index) => (
+                  <CardLoading key={"productListLoading" + index} />
+                ))
+              )
+            }
           </div>
+
+          {
+            !loading && !data[0] && (
+              <div className="panel p-12 text-center">
+                <p className="font-display text-lg font-semibold">No products here yet</p>
+                <p className="mt-1 text-sm text-fg-muted">Try another aisle from the list.</p>
+              </div>
+            )
+          }
         </div>
       </div>
     </section>

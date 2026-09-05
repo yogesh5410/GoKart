@@ -5,16 +5,16 @@ import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import CardLoading from './CardLoading'
 import CardProduct from './CardProduct'
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { useSelector } from 'react-redux'
-import { valideURLConvert} from '../utils/valideURLConvert.js'
+import { valideURLConvert } from '../utils/valideURLConvert.js'
 
 const CategoryWiseProductDisplay = ({ id, name }) => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const containerRef = useRef()
     const subCategoryData = useSelector(state => state.product.allSubCategory)
-    const loadingCardNumber = new Array(7).fill(null)
+    const loadingCardNumber = new Array(6).fill(null)
 
     const fetchCategoryWiseProduct = async () => {
         try {
@@ -43,68 +43,85 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
     }, [])
 
     const handleScrollRight = () => {
-        containerRef.current.scrollLeft += 200
+        containerRef.current.scrollLeft += 320
     }
 
     const handleScrollLeft = () => {
-        containerRef.current.scrollLeft -= 200
+        containerRef.current.scrollLeft -= 320
     }
 
+    const handleRedirectProductListpage = () => {
+        const subcategory = subCategoryData.find(sub => {
+            const filterData = sub.category.some(c => {
+                return c._id == id
+            })
 
-  const handleRedirectProductListpage = ()=>{
-      const subcategory = subCategoryData.find(sub =>{
-        const filterData = sub.category.some(c => {
-          return c._id == id
+            return filterData ? filterData : null
         })
+        const url = `/${valideURLConvert(name)}-${id}/${valideURLConvert(subcategory?.name)}-${subcategory?._id}`
 
-        return filterData ? filterData : null
-      })
-      const url = `/${valideURLConvert(name)}-${id}/${valideURLConvert(subcategory?.name)}-${subcategory?._id}`
+        return url
+    }
 
-      return url
-  }
+    const redirectURL = handleRedirectProductListpage()
 
-  const redirectURL =  handleRedirectProductListpage()
+    if (!loading && !data[0]) {
+        return null
+    }
+
     return (
-        <div>
-            <div className='container mx-auto p-4 flex items-center justify-between gap-4'>
-                <h3 className='font-semibold text-lg md:text-xl'>{name}</h3>
-                <Link  to={redirectURL} className='text-green-600 hover:text-green-400'>See All</Link>
-            </div>
-            <div className='relative flex items-center '>
-                <div className=' flex gap-4 md:gap-6 lg:gap-8 container mx-auto px-4 overflow-x-scroll scrollbar-none scroll-smooth' ref={containerRef}>
-                {/* scrollbar-none from index.css */}
-                    {loading &&
-                        loadingCardNumber.map((_, index) => {
-                            return (
-                                <CardLoading key={"CategorywiseProductDisplay123" + index} />
-                            )
-                        })
-                    }
-
-
-                    {
-                        data.map((p, index) => {
-                            return (
-                                <CardProduct
-                                    data={p}
-                                    key={p._id + "CategorywiseProductDisplay" + index}
-                                />
-                            )
-                        })
-                    }
-
+        <section className="container mx-auto pt-12">
+            <div className="flex items-end justify-between gap-4">
+                <div>
+                    <p className="eyebrow">Handpicked</p>
+                    <h2 className="section-title mt-1">{name}</h2>
                 </div>
-                <div className='w-full left-0 right-0 container mx-auto  px-2  absolute hidden lg:flex justify-between'>
-                    <button onClick={handleScrollLeft} className='z-10 relative bg-white hover:bg-gray-100 shadow-lg text-lg p-2 rounded-full'>
-                        <FaAngleLeft />
-                    </button>
-                    <button onClick={handleScrollRight} className='z-10 relative  bg-white hover:bg-gray-100 shadow-lg p-2 text-lg rounded-full'>
-                        <FaAngleRight />
-                    </button>
+
+                <div className="flex items-center gap-2">
+                    <Link to={redirectURL} className="btn-ghost text-sm text-brand hover:bg-brand-soft">
+                        See all
+                    </Link>
+                    <div className="hidden items-center gap-2 lg:flex">
+                        <button
+                            onClick={handleScrollLeft}
+                            aria-label="Scroll left"
+                            className="grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-fg-muted transition-colors hover:border-brand hover:text-brand"
+                        >
+                            <HiChevronLeft size={18} />
+                        </button>
+                        <button
+                            onClick={handleScrollRight}
+                            aria-label="Scroll right"
+                            className="grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-fg-muted transition-colors hover:border-brand hover:text-brand"
+                        >
+                            <HiChevronRight size={18} />
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div
+                ref={containerRef}
+                className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-none pb-2"
+            >
+                {
+                    loading &&
+                    loadingCardNumber.map((_, index) => (
+                        <div key={"CategorywiseProductDisplay123" + index} className="snap-start">
+                            <CardLoading />
+                        </div>
+                    ))
+                }
+
+                {
+                    data.map((p, index) => (
+                        <div key={p._id + "CategorywiseProductDisplay" + index} className="snap-start">
+                            <CardProduct data={p} />
+                        </div>
+                    ))
+                }
+            </div>
+        </section>
     )
 }
 

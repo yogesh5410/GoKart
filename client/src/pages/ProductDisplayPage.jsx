@@ -1,230 +1,232 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import SummaryApi from '../common/SummaryApi'
 import Axios from '../utils/Axios'
 import AxiosToastError from '../utils/AxiosToastError'
-import { FaAngleRight,FaAngleLeft } from "react-icons/fa6";
+import { HiChevronLeft, HiChevronRight, HiOutlineTruck, HiOutlineShieldCheck, HiOutlineArrowPath } from "react-icons/hi2";
 import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
-import Divider from '../components/Divider'
-import image1 from '../assets/minute_delivery.png'
-import image2 from '../assets/Best_Prices_Offers.png'
-import image3 from '../assets/Wide_Assortment.png'
 import { pricewithDiscount } from '../utils/PriceWithDiscount'
 import AddToCartButton from '../components/AddToCartButton'
+
+const assurances = [
+  {
+    icon: HiOutlineTruck,
+    title: 'Same-day delivery',
+    copy: 'Placed before 6pm, at your door by evening.',
+  },
+  {
+    icon: HiOutlineShieldCheck,
+    title: 'Quality checked',
+    copy: 'Every batch inspected before it leaves the store.',
+  },
+  {
+    icon: HiOutlineArrowPath,
+    title: 'Easy returns',
+    copy: 'Not right? Tell us at delivery and it goes straight back.',
+  },
+]
 
 const ProductDisplayPage = () => {
   const params = useParams()
   let productId = params?.product?.split("-")?.slice(-1)[0]
-  const [data,setData] = useState({
-    name : "",
-    image : []
+  const [data, setData] = useState({
+    name: "",
+    image: []
   })
-  const [image,setImage] = useState(0)
-  const [loading,setLoading] = useState(false)
+  const [image, setImage] = useState(0)
+  const [loading, setLoading] = useState(false)
   const imageContainer = useRef()
 
-  const fetchProductDetails = async()=>{
+  const fetchProductDetails = async () => {
     try {
-        const response = await Axios({
-          ...SummaryApi.getProductDetails,
-          data : {
-            productId : productId 
-          }
-        })
-
-        const { data : responseData } = response
-
-        if(responseData.success){
-          setData(responseData.data)
+      const response = await Axios({
+        ...SummaryApi.getProductDetails,
+        data: {
+          productId: productId
         }
+      })
+
+      const { data: responseData } = response
+
+      if (responseData.success) {
+        setData(responseData.data)
+      }
     } catch (error) {
       AxiosToastError(error)
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchProductDetails()
-  },[params])
-  
-  const handleScrollRight = ()=>{
-    imageContainer.current.scrollLeft += 100
+  }, [params])
+
+  const handleScrollRight = () => {
+    imageContainer.current.scrollLeft += 120
   }
-  const handleScrollLeft = ()=>{
-    imageContainer.current.scrollLeft -= 100
+  const handleScrollLeft = () => {
+    imageContainer.current.scrollLeft -= 120
   }
-  console.log("product data",data)
-  return (
-    <section className='container mx-auto p-4 grid lg:grid-cols-2 bg-blue-50'>
-        <div className=''>
-            <div className='bg-white lg:min-h-[65vh] lg:max-h-[65vh] rounded min-h-56 max-h-56 h-full w-full'>
-                <img
-                    src={data.image[image]}
-                    className='w-full h-full object-scale-down'
-                /> 
+
+  const details = (
+    <div className="grid gap-5">
+      <div>
+        <p className="eyebrow">Description</p>
+        <p className="mt-2 text-sm leading-relaxed text-fg-muted">{data.description}</p>
+      </div>
+      <div>
+        <p className="eyebrow">Unit</p>
+        <p className="mt-2 text-sm text-fg-muted">{data.unit}</p>
+      </div>
+      {
+        data?.more_details && Object.keys(data?.more_details).map((element, index) => {
+          return (
+            <div key={element + index}>
+              <p className="eyebrow">{element}</p>
+              <p className="mt-2 text-sm text-fg-muted">{data?.more_details[element]}</p>
             </div>
-            <div className='flex items-center justify-center gap-3 my-2'>
+          )
+        })
+      }
+    </div>
+  )
+
+  return (
+    <section className="container mx-auto py-6">
+      <nav className="mb-4 flex items-center gap-2 text-xs text-fg-faint">
+        <Link to="/" className="transition-colors hover:text-brand">Home</Link>
+        <span>/</span>
+        <span className="line-clamp-1 font-medium text-fg">{data.name}</span>
+      </nav>
+
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+
+        {/***** gallery *****/}
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="card overflow-hidden">
+            <div className="aspect-square w-full bg-sunken p-6 lg:aspect-[4/3]">
+              <img
+                src={data.image[image]}
+                alt={data.name}
+                className="h-full w-full object-contain"
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-center gap-1.5">
+            {
+              data.image.map((img, index) => (
+                <span
+                  key={img + index + "point"}
+                  className={`h-1.5 rounded-full transition-all ${index === image ? "w-6 bg-brand" : "w-1.5 bg-line-strong"}`}
+                />
+              ))
+            }
+          </div>
+
+          <div className="relative mt-3">
+            <div ref={imageContainer} className="flex gap-3 overflow-x-auto scroll-smooth scrollbar-none">
               {
-                data.image.map((img,index)=>{
-                  return(
-                    <div key={img+index+"point"} className={`bg-slate-200 w-3 h-3 lg:w-5 lg:h-5 rounded-full ${index === image && "bg-slate-300"}`}></div>
-                  )
-                })
+                data.image.map((img, index) => (
+                  <button
+                    key={img + index}
+                    onClick={() => setImage(index)}
+                    className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border bg-surface p-1.5 transition-colors
+                      ${index === image ? "border-brand ring-1 ring-brand/40" : "border-line hover:border-brand/50"}`}
+                  >
+                    <img
+                      src={img}
+                      alt={`${data.name} thumbnail ${index + 1}`}
+                      className="h-full w-full object-contain"
+                    />
+                  </button>
+                ))
               }
             </div>
-            <div className='grid relative'>
-                <div ref={imageContainer} className='flex gap-4 z-10 relative w-full overflow-x-auto scrollbar-none'>
-                      {
-                        data.image.map((img,index)=>{
-                          return(
-                            <div className='w-20 h-20 min-h-20 min-w-20 scr cursor-pointer shadow-md' key={img+index}>
-                              <img
-                                  src={img}
-                                  alt='min-product'
-                                  onClick={()=>setImage(index)}
-                                  className='w-full h-full object-scale-down' 
-                              />
-                            </div>
-                          )
-                        })
-                      }
-                </div>
-                <div className='w-full -ml-3 h-full hidden lg:flex justify-between absolute  items-center'>
-                    <button onClick={handleScrollLeft} className='z-10 bg-white relative p-1 rounded-full shadow-lg'>
-                        <FaAngleLeft/>
-                    </button>
-                    <button onClick={handleScrollRight} className='z-10 bg-white relative p-1 rounded-full shadow-lg'>
-                        <FaAngleRight/>
-                    </button>
-                </div>
-            </div>
-            <div>
-            </div>
 
-            <div className='my-4  hidden lg:grid gap-3 '>
-                <div>
-                    <p className='font-semibold'>Description</p>
-                    <p className='text-base'>{data.description}</p>
+            {
+              data.image.length > 4 && (
+                <div className="pointer-events-none absolute inset-y-0 -left-3 -right-3 hidden items-center justify-between lg:flex">
+                  <button onClick={handleScrollLeft} aria-label="Previous thumbnails" className="pointer-events-auto grid h-8 w-8 place-items-center rounded-full border border-line bg-surface text-fg-muted shadow-card hover:text-brand">
+                    <HiChevronLeft size={16} />
+                  </button>
+                  <button onClick={handleScrollRight} aria-label="More thumbnails" className="pointer-events-auto grid h-8 w-8 place-items-center rounded-full border border-line bg-surface text-fg-muted shadow-card hover:text-brand">
+                    <HiChevronRight size={16} />
+                  </button>
                 </div>
-                <div>
-                    <p className='font-semibold'>Unit</p>
-                    <p className='text-base'>{data.unit}</p>
-                </div>
-                {
-                  data?.more_details && Object.keys(data?.more_details).map((element,index)=>{
-                    return(
-                      <div>
-                          <p className='font-semibold'>{element}</p>
-                          <p className='text-base'>{data?.more_details[element]}</p>
-                      </div>
-                    )
-                  })
-                }
-            </div>
+              )
+            }
+          </div>
+
+          <div className="mt-8 hidden lg:block">
+            {details}
+          </div>
         </div>
 
+        {/***** buy box *****/}
+        <div className="grid content-start gap-6">
+          <div>
+            {
+              Boolean(data.discount) && (
+                <span className="chip-brand">{data.discount}% off</span>
+              )
+            }
+            <h1 className="mt-3 font-display text-2xl font-bold leading-tight lg:text-4xl">{data.name}</h1>
+            <p className="mt-2 text-sm text-fg-muted">{data.unit}</p>
+          </div>
 
-        <div className='p-4 lg:pl-7 text-base lg:text-lg'>
-            <p className='bg-green-300 w-fit px-2 rounded-full'>10 Min</p>
-            <h2 className='text-lg font-semibold lg:text-3xl'>{data.name}</h2>  
-            <p className=''>{data.unit}</p> 
-            <Divider/>
-            <div>
-              <p className=''>Price</p> 
-              <div className='flex items-center gap-2 lg:gap-4'>
-                <div className='border border-green-600 px-4 py-2 rounded bg-green-50 w-fit'>
-                    <p className='font-semibold text-lg lg:text-xl'>{DisplayPriceInRupees(pricewithDiscount(data.price,data.discount))}</p>
-                </div>
-                {
-                  data.discount ? (
-                //   true && (
-                    <p className='line-through'>{DisplayPriceInRupees(data.price)}</p>
-                  ) : ("")
-                }
-                {
-                  data.discount ? (
-                //   true && (
-                    <p className="font-bold text-green-600 lg:text-2xl">{data.discount}% <span className='text-base text-neutral-500'>Discount</span></p>
-                  ) : ("")
-                }
-                
-              </div>
+          <div className="card p-5">
+            <p className="eyebrow">Price</p>
+            <div className="mt-2 flex flex-wrap items-baseline gap-3">
+              <span className="font-display text-3xl font-bold tabular-nums text-fg">
+                {DisplayPriceInRupees(pricewithDiscount(data.price, data.discount))}
+              </span>
+              {
+                data.discount ? (
+                  <>
+                    <span className="text-base text-fg-faint line-through">{DisplayPriceInRupees(data.price)}</span>
+                    <span className="text-sm font-semibold text-positive">You save {data.discount}%</span>
+                  </>
+                ) : null
+              }
+            </div>
 
-            </div> 
-              
+            <div className="mt-5">
               {
                 data.stock === 0 ? (
-                  <p className='text-lg text-red-500 my-2'>Out of Stock</p>
-                ) 
-                : (
-                  // <button className='my-4 px-4 py-1 bg-green-600 hover:bg-green-700 text-white rounded'>Add</button>
-                  <div className='my-4'>
-                    <AddToCartButton data={data}/>
+                  <p className="chip-critical">Out of stock</p>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <AddToCartButton data={data} />
+                    <span className="text-xs text-fg-faint">Free delivery on this order</span>
                   </div>
                 )
               }
-           
-
-            <h2 className='font-semibold'>Why shop from binkeyit? </h2>
-            <div>
-                  <div className='flex  items-center gap-4 my-4'>
-                      <img
-                        src={image1}
-                        alt='superfast delivery'
-                        className='w-20 h-20'
-                      />
-                      <div className='text-sm'>
-                        <div className='font-semibold'>Superfast Delivery</div>
-                        <p>Get your orer delivered to your doorstep at the earliest from dark stores near you.</p>
-                      </div>
-                  </div>
-                  <div className='flex  items-center gap-4 my-4'>
-                      <img
-                        src={image2}
-                        alt='Best prices offers'
-                        className='w-20 h-20'
-                      />
-                      <div className='text-sm'>
-                        <div className='font-semibold'>Best Prices & Offers</div>
-                        <p>Best price destination with offers directly from the nanufacturers.</p>
-                      </div>
-                  </div>
-                  <div className='flex  items-center gap-4 my-4'>
-                      <img
-                        src={image3}
-                        alt='Wide Assortment'
-                        className='w-20 h-20'
-                      />
-                      <div className='text-sm'>
-                        <div className='font-semibold'>Wide Assortment</div>
-                        <p>Choose from 5000+ products across food personal care, household & other categories.</p>
-                      </div>
-                  </div>
             </div>
+          </div>
 
-            {/****only mobile */}
-            <div className='my-4 lg:hidden grid gap-3 '>
-                <div>
-                    <p className='font-semibold'>Description</p>
-                    <p className='text-base'>{data.description}</p>
+          <div className="grid gap-3">
+            {
+              assurances.map(({ icon: Icon, title, copy }) => (
+                <div key={title} className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
+                    <Icon size={19} />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-fg">{title}</p>
+                    <p className="mt-0.5 text-sm text-fg-muted">{copy}</p>
+                  </div>
                 </div>
-                <div>
-                    <p className='font-semibold'>Unit</p>
-                    <p className='text-base'>{data.unit}</p>
-                </div>
-                {
-                  data?.more_details && Object.keys(data?.more_details).map((element,index)=>{
-                    return(
-                      <div>
-                          <p className='font-semibold'>{element}</p>
-                          <p className='text-base'>{data?.more_details[element]}</p>
-                      </div>
-                    )
-                  })
-                }
-            </div>
+              ))
+            }
+          </div>
+
+          <div className="lg:hidden">
+            {details}
+          </div>
         </div>
+      </div>
     </section>
   )
 }

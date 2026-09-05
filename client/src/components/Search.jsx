@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { IoSearch } from "react-icons/io5";
+import { HiOutlineMagnifyingGlass, HiArrowLeft } from "react-icons/hi2";
 import { TypeAnimation } from 'react-type-animation';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { FaArrowLeft } from "react-icons/fa";
 import { useMobile } from '../hooks/useMobile';
 
 const Search = () => {
@@ -24,71 +23,62 @@ const Search = () => {
   }
 
   const handleOnChange = (e) => {
-    const value = e.target.value 
+    const value = e.target.value
     const url = `/search?q=${value}`
     navigate(url)
   }
 
   return (
-    <div className="w-full min-w-[300px] lg:min-w-[420px] h-11 lg:h-12 rounded-lg overflow-hidden flex items-center text-neutral-500 bg-slate-200 group focus-within:border-primary-200 border-2">
+    <div className="group flex h-11 w-full items-center gap-2 rounded-pill border border-white/10 bg-white/10 px-2 text-ink-100 backdrop-blur transition-colors duration-200 focus-within:border-brand/70 focus-within:bg-white/[0.14] lg:h-12">
       {
         (isMobile && isSearch) ? (
-          <Link to ={"/"} className="flex justify-center items-center h-full p-2 m-1 group-focus-within:text-primary-200 bg-white rounded-full ">
-            <FaArrowLeft size={22} />
+          <Link to={"/"} aria-label="Back" className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/10 text-ink-50">
+            <HiArrowLeft size={18} />
           </Link>
         ) : (
-          <button className="flex justify-center items-center h-full p-3 group-focus-within:text-primary-200">
-            <IoSearch size={22} />
-          </button>
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-200 transition-colors group-focus-within:text-brand">
+            <HiOutlineMagnifyingGlass size={20} />
+          </span>
         )
       }
 
-
-      <div className="w-full h-full flex items-center">
+      <div className="flex h-full w-full items-center">
         {
           !isSearch ? (
-            // when not in search page
-            <div onClick={redirectToSearchPage}>
+            <div onClick={redirectToSearchPage} className="w-full cursor-text text-sm text-ink-200">
               <TypeAnimation
                 sequence={[
-                  'Search "sugar"',
-                  1000,
-                  'Search "bread"',
-                  1000,
+                  'Search "cold pressed oil"',
+                  1200,
+                  'Search "sourdough"',
+                  1200,
                   'Search "paneer"',
-                  1000,
-                  'Search "curd"',
-                  1000,
-                  'Search "milk"',
-                  1000,
-                  'Search "rice"',
-                  1000,
-                  () => {
-                    console.log('Sequence completed');
-                  },
+                  1200,
+                  'Search "alphonso mango"',
+                  1200,
+                  'Search "filter coffee"',
+                  1200,
+                  'Search "basmati rice"',
+                  1200,
                 ]}
                 wrapper="span"
                 cursor={true}
                 repeat={Infinity}
-                style={{ fontSize: '1em', display: 'inline-block' }}
+                style={{ fontSize: '0.875rem', display: 'inline-block' }}
               />
             </div>
           ) : (
-            // when in search page
-            <div className="h-full w-full">
-              <input
-                type="text"
-                placeholder="Search items"
-                autoFocus
-                defaultValue={searchText}
-                className="w-full bg-transparent h-full outline-none"
-                onChange={handleOnChange}
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="Search the aisles"
+              autoFocus
+              defaultValue={searchText}
+              className="h-full w-full bg-transparent text-sm text-ink-50 placeholder:text-ink-300 outline-none"
+              onChange={handleOnChange}
+            />
           )
         }
       </div>
-
     </div>
   )
 }
